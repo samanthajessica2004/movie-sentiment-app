@@ -2,6 +2,11 @@ import streamlit as st
 from transformers import pipeline
 import requests
 
+
+
+test = requests.get(f"http://www.omdbapi.com/?t=Inception&apikey={OMDB_KEY}")
+st.write("API Response:", test.json())
+
 st.set_page_config(
     page_title="Cinelytix",
     page_icon="🎬",
