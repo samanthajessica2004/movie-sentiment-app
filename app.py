@@ -2,10 +2,6 @@ import streamlit as st
 from transformers import pipeline
 import requests
 
-
-
-
-
 st.set_page_config(
     page_title="Cinelytix",
     page_icon="🎬",
@@ -15,8 +11,6 @@ st.set_page_config(
 # ── PASTE YOUR OMDB KEY HERE ──────────────────────────────────────────
 OMDB_KEY = "c1c0e742"
 # ─────────────────────────────────────────────────────────────────────
-
-
 
 st.markdown("""
 <style>
@@ -215,9 +209,9 @@ section[data-testid="stSidebar"] {
     text-transform: uppercase;
 }
 
-.score-pos { color: #a78bfa; font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif; }
-.score-mix { color: #fbbf24; font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif; }
-.score-neg { color: #f87171; font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+.score-pos { color:#a78bfa; font-size:2rem; font-weight:700; font-family:'Playfair Display',serif; }
+.score-mix { color:#fbbf24; font-size:2rem; font-weight:700; font-family:'Playfair Display',serif; }
+.score-neg { color:#f87171; font-size:2rem; font-weight:700; font-family:'Playfair Display',serif; }
 
 .progress-wrap {
     background: #1a1a2e;
@@ -294,10 +288,11 @@ section[data-testid="stSidebar"] {
 """, unsafe_allow_html=True)
 
 # ── Session State ──────────────────────────────────────────────────────
-if "watchlist"   not in st.session_state: st.session_state.watchlist   = []
-if "page"        not in st.session_state: st.session_state.page        = "Home"
-if "analyzed"    not in st.session_state: st.session_state.analyzed    = []
-if "search_data" not in st.session_state: st.session_state.search_data = None
+if "watchlist"    not in st.session_state: st.session_state.watchlist    = []
+if "page"         not in st.session_state: st.session_state.page         = "Home"
+if "analyzed"     not in st.session_state: st.session_state.analyzed     = []
+if "search_data"  not in st.session_state: st.session_state.search_data  = None
+if "last_query"   not in st.session_state: st.session_state.last_query   = ""
 
 # ── Model ──────────────────────────────────────────────────────────────
 @st.cache_resource
@@ -312,117 +307,96 @@ classifier = load_model()
 @st.cache_data(ttl=3600)
 def fetch_movie(title):
     try:
+        # Try exact title match first
         url = f"https://www.omdbapi.com/?t={requests.utils.quote(title)}&apikey={OMDB_KEY}"
         r   = requests.get(url, timeout=10)
         d   = r.json()
         if d.get("Response") == "True":
             return d
-        else:
-            # Try searching by keyword if exact match fails
-            url2 = f"https://www.omdbapi.com/?s={requests.utils.quote(title)}&apikey={OMDB_KEY}"
-            r2   = requests.get(url2, timeout=10)
-            d2   = r2.json()
-            if d2.get("Response") == "True":
-                first = d2["Search"][0]["imdbID"]
-                url3  = f"https://www.omdbapi.com/?i={first}&apikey={OMDB_KEY}"
-                r3    = requests.get(url3, timeout=10)
-                return r3.json()
+        # Fallback — search by keyword
+        url2 = f"https://www.omdbapi.com/?s={requests.utils.quote(title)}&apikey={OMDB_KEY}"
+        r2   = requests.get(url2, timeout=10)
+        d2   = r2.json()
+        if d2.get("Response") == "True":
+            first_id = d2["Search"][0]["imdbID"]
+            url3     = f"https://www.omdbapi.com/?i={first_id}&apikey={OMDB_KEY}"
+            r3       = requests.get(url3, timeout=10)
+            return r3.json()
     except Exception as e:
         st.error(f"API error: {e}")
     return None
 
 @st.cache_data(ttl=3600)
-def fetch_wiki_reviews(title):
-    """Fetch reception text from Wikipedia"""
+def fetch_wiki(title):
     try:
-        search_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{requests.utils.quote(title.replace(' ', '_'))}"
-        r = requests.get(search_url, timeout=10)
+        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{requests.utils.quote(title.replace(' ','_'))}"
+        r   = requests.get(url, timeout=10)
         if r.status_code == 200:
-            data = r.json()
-            extract = data.get("extract", "")
-            if len(extract) > 100:
-                return extract
+            text = r.json().get("extract", "")
+            if len(text) > 100:
+                return text
     except:
         pass
     return None
 
-def analyze_text_sentiment(text):
-    """Run text through DistilBERT and return score"""
+def analyze_sentiment(text):
     if not text or len(text.strip()) < 20:
         return None, None
-    sentences = [s.strip() for s in text.replace(".", ". ").split(". ") if len(s.strip()) > 30][:10]
+    sentences = [s.strip() for s in text.split(". ") if len(s.strip()) > 30][:10]
     if not sentences:
         return None, None
-    pos_count = 0
-    total     = 0
-    confidences = []
-    for sentence in sentences:
+    pos   = 0
+    total = 0
+    confs = []
+    for s in sentences:
         try:
-            result     = classifier(sentence[:512])[0]
-            label      = result["label"]
-            confidence = result["score"]
-            if label == "LABEL_1":
-                pos_count += 1
-            confidences.append(confidence)
+            r = classifier(s[:512])[0]
+            if r["label"] == "LABEL_1":
+                pos += 1
+            confs.append(r["score"])
             total += 1
         except:
             continue
     if total == 0:
         return None, None
-    pos_score = round((pos_count / total) * 100)
-    avg_conf  = round(sum(confidences) / len(confidences) * 100, 1)
-    return pos_score, avg_conf
+    return round((pos / total) * 100), round(sum(confs) / len(confs) * 100, 1)
 
+@st.cache_data(ttl=3600)
 def get_movie_sentiment(title):
-    """Full pipeline — fetch movie + analyze sentiment"""
     movie = fetch_movie(title)
     if not movie:
         return None
-
-    texts_to_analyze = []
-
-    # Use plot as base text
-    plot = movie.get("Plot", "")
+    texts = []
+    plot  = movie.get("Plot", "")
     if plot and plot != "N/A":
-        texts_to_analyze.append(plot)
-
-    # Use Wikipedia reception text
-    wiki = fetch_wiki_reviews(title)
+        texts.append(plot)
+    wiki = fetch_wiki(movie.get("Title", title))
     if wiki:
-        texts_to_analyze.append(wiki)
-
-    # Combine all text
-    combined = " ".join(texts_to_analyze)
-
-    if combined.strip():
-        score, confidence = analyze_text_sentiment(combined)
-    else:
-        score, confidence = None, None
-
-    # Fallback to IMDB rating if model returns nothing
+        texts.append(wiki)
+    combined   = " ".join(texts)
+    score, conf = analyze_sentiment(combined)
     if score is None:
         imdb = movie.get("imdbRating", "N/A")
         if imdb != "N/A":
             try:
-                score      = round((float(imdb) / 10) * 100)
-                confidence = 75.0
+                score = round((float(imdb) / 10) * 100)
+                conf  = 75.0
             except:
-                score, confidence = 70, 70.0
-
+                score, conf = 70, 70.0
     return {
-        "title":      movie.get("Title", title),
-        "year":       movie.get("Year", "—"),
-        "genre":      movie.get("Genre", "—").split(",")[0].strip().upper(),
-        "country":    movie.get("Country", "—").split(",")[0].strip(),
-        "director":   movie.get("Director", "—"),
-        "plot":       movie.get("Plot", "—"),
-        "poster":     movie.get("Poster", "N/A"),
-        "imdb":       movie.get("imdbRating", "—"),
-        "runtime":    movie.get("Runtime", "—"),
-        "score":      score or 70,
-        "confidence": confidence or 70.0,
-        "language":   movie.get("Language", "—"),
-        "awards":     movie.get("Awards", "—"),
+        "title":    movie.get("Title", title),
+        "year":     movie.get("Year", "—"),
+        "genre":    movie.get("Genre", "—").split(",")[0].strip().upper(),
+        "country":  movie.get("Country", "—").split(",")[0].strip(),
+        "director": movie.get("Director", "—"),
+        "plot":     movie.get("Plot", "—"),
+        "poster":   movie.get("Poster", "N/A"),
+        "imdb":     movie.get("imdbRating", "—"),
+        "runtime":  movie.get("Runtime", "—"),
+        "language": movie.get("Language", "—"),
+        "awards":   movie.get("Awards", "—"),
+        "score":    score or 70,
+        "conf":     conf  or 70.0,
     }
 
 # ── Helpers ────────────────────────────────────────────────────────────
@@ -441,22 +415,85 @@ def bar_cls(score):
     if score >= 50: return "progress-mix"
     return "progress-neg"
 
+def show_movie_result(m, key_suffix=""):
+    b_cls, b_txt = badge_html(m["score"])
+    neg          = 100 - m["score"]
+    col_p, col_d = st.columns([1, 2.5])
+    with col_p:
+        if m["poster"] and m["poster"] != "N/A":
+            st.image(m["poster"], width=200)
+        else:
+            st.markdown("<div style='background:#0d0d1f;border:1px solid #1e1e3a;border-radius:12px;width:200px;height:280px;display:flex;align-items:center;justify-content:center;font-size:48px;'>🎬</div>", unsafe_allow_html=True)
+    with col_d:
+        st.markdown(f"""
+        <div class='search-card'>
+            <div style='font-family:"Playfair Display",serif;font-size:1.8rem;
+                        color:#e8e4f0;font-weight:700;margin-bottom:4px;'>
+                {m['title']}
+            </div>
+            <div style='font-size:11px;color:#3a3a5a;text-transform:uppercase;
+                        letter-spacing:0.1em;margin-bottom:8px;'>
+                {m['genre']} · {m['year']} · {m['country']} · {m['language']}
+            </div>
+            <div style='font-size:13px;color:#6060a0;margin-bottom:16px;
+                        font-style:italic;line-height:1.6;'>
+                {m['plot'][:250]}...
+            </div>
+            <div style='display:flex;align-items:center;gap:12px;margin-bottom:16px;'>
+                <span class='{b_cls}'>{b_txt}</span>
+                <span style='font-size:2rem;font-weight:700;
+                             color:{"#a78bfa" if m["score"]>=75 else "#fbbf24" if m["score"]>=50 else "#f87171"};
+                             font-family:"Playfair Display",serif;'>
+                    {m['score']}%
+                </span>
+                <span style='font-size:12px;color:#3a3a5a;'>positive sentiment</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;
+                        font-size:12px;color:#3a3a5a;margin-bottom:4px;'>
+                <span>Positive</span><span>{m['score']}%</span>
+            </div>
+            <div class='progress-wrap'>
+                <div class='{bar_cls(m["score"])}' style='width:{m["score"]}%;'></div>
+            </div>
+            <div style='display:flex;justify-content:space-between;
+                        font-size:12px;color:#3a3a5a;margin:6px 0 4px;'>
+                <span>Negative</span><span>{neg}%</span>
+            </div>
+            <div class='progress-wrap'>
+                <div class='progress-neg' style='width:{neg}%;'></div>
+            </div>
+            <div style='margin-top:12px;font-size:11px;color:#3a3a5a;'>
+                Directed by {m['director']} ·
+                IMDB: {m['imdb']} ·
+                Model confidence: {m['conf']}%
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("+ Add to Watchlist", key=f"watch_{key_suffix}",
+                     use_container_width=True):
+            if m["title"] not in [w["title"] for w in st.session_state.watchlist]:
+                st.session_state.watchlist.append({
+                    "title":  m["title"],
+                    "status": "Want to Watch",
+                    "sentiment": f"{m['score']}%"
+                })
+                st.success(f"Added '{m['title']}' to watchlist!")
+            else:
+                st.info("Already in watchlist!")
+
 # ── Sidebar ────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("<span class='nav-logo'>Cinelytix</span>", unsafe_allow_html=True)
     st.markdown("<span class='nav-sub'>Cinematic Intelligence</span>", unsafe_allow_html=True)
-
     pages = {
         "Home":      "🏠  Home",
         "Search":    "🔍  Search Any Movie",
         "Sentiment": "🎬  Analyze a Review",
         "Watchlist": "⭐  My Watchlist",
     }
-
     for key, label in pages.items():
         if st.button(label, use_container_width=True, key=f"nav_{key}"):
             st.session_state.page = key
-
     st.markdown("---")
     st.markdown(f"<span class='nav-stat'>Watchlist: {len(st.session_state.watchlist)} films</span>", unsafe_allow_html=True)
     st.markdown(f"<span class='nav-stat'>Analyzed: {len(st.session_state.analyzed)} reviews</span>", unsafe_allow_html=True)
@@ -477,9 +514,9 @@ if st.session_state.page == "Home":
         <div>
             <span class='hero-badge'>DistilBERT AI</span>
             <span class='hero-badge'>86.4% Accuracy</span>
-            <span class='hero-badge'>Any Movie · Any Language</span>
+            <span class='hero-badge'>Any Movie · Any Country</span>
             <span class='hero-badge'>Real-time Analysis</span>
-            <span class='hero-badge'>© Samantha Jessica Monis</span>
+            <span class='hero-badge'>© Samantha Jessica Monis 2026</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -491,204 +528,78 @@ if st.session_state.page == "Home":
     with c4: st.markdown(f"<div class='stat-card'><div class='stat-val'>{len(st.session_state.analyzed)}</div><div class='stat-lbl'>Reviews Analyzed</div></div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-title'>Search Any Movie</div>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#3a3a5a;font-size:13px;'>Type any movie title from any country — Bollywood, Hollywood, Korean, French, Japanese and more</p>", unsafe_allow_html=True)
 
     col_s, col_b = st.columns([4, 1])
-with col_s:
-    home_q = st.text_input(
-        "",
-        placeholder="e.g. RRR, Parasite, Amelie, Spirited Away, 3 Idiots...",
-        label_visibility="collapsed",
-        key="home_search"
-    )
-with col_b:
-    home_btn = st.button("Search", use_container_width=True, key="home_btn")
+    with col_s:
+        home_q = st.text_input(
+            "",
+            placeholder="Type any movie from any country — RRR, Parasite, Amelie, 3 Idiots...",
+            label_visibility="collapsed",
+            key="home_search"
+        )
+    with col_b:
+        home_btn = st.button("Search", use_container_width=True, key="home_btn")
 
-# Fix — trigger on button OR on Enter key
-if home_btn or (home_q and home_q != st.session_state.get("last_query", "")):
-    if home_q:
-        st.session_state.last_query = home_q
+    if home_btn and home_q:
+        st.session_state.last_query  = home_q
+        st.session_state.search_data = None
         with st.spinner(f"Fetching and analyzing '{home_q}'..."):
             result = get_movie_sentiment(home_q)
-            if result:
-                st.session_state.search_data = result
-            else:
-                st.error(f"Could not find '{home_q}'. Try checking the spelling.") = result
+        if result:
+            st.session_state.search_data = result
+        else:
+            st.error(f"Could not find '{home_q}'. Check spelling and try again.")
 
     if st.session_state.search_data:
-        m        = st.session_state.search_data
-        b_cls, b_txt = badge_html(m["score"])
-        neg      = 100 - m["score"]
-
-        col_p, col_d = st.columns([1, 2])
-        with col_p:
-            if m["poster"] and m["poster"] != "N/A":
-                st.image(m["poster"], width=200)
-            else:
-                st.markdown("<div style='background:#0d0d1f;border:1px solid #1e1e3a;border-radius:12px;width:200px;height:280px;display:flex;align-items:center;justify-content:center;font-size:48px;'>🎬</div>", unsafe_allow_html=True)
-
-        with col_d:
-            st.markdown(f"""
-            <div class='search-card'>
-                <div style='font-family:"Playfair Display",serif;font-size:1.8rem;
-                            color:#e8e4f0;font-weight:700;margin-bottom:4px;'>
-                    {m['title']}
-                </div>
-                <div style='font-size:11px;color:#3a3a5a;text-transform:uppercase;
-                            letter-spacing:0.1em;margin-bottom:12px;'>
-                    {m['genre']} · {m['year']} · {m['country']} · {m['language']}
-                </div>
-                <div style='font-size:13px;color:#6060a0;margin-bottom:16px;
-                            font-style:italic;'>
-                    {m['plot'][:200]}...
-                </div>
-                <div style='display:flex;align-items:center;gap:16px;margin-bottom:16px;'>
-                    <span class='{b_cls}'>{b_txt}</span>
-                    <span style='font-size:11px;color:#3a3a5a;'>
-                        IMDB: {m['imdb']} · {m['runtime']}
-                    </span>
-                </div>
-                <div style='display:flex;justify-content:space-between;
-                            font-size:12px;color:#3a3a5a;margin-bottom:4px;'>
-                    <span>Positive sentiment</span><span>{m['score']}%</span>
-                </div>
-                <div class='progress-wrap'>
-                    <div class='{bar_cls(m["score"])}' style='width:{m["score"]}%;'></div>
-                </div>
-                <div style='display:flex;justify-content:space-between;
-                            font-size:12px;color:#3a3a5a;margin:8px 0 4px;'>
-                    <span>Negative sentiment</span><span>{neg}%</span>
-                </div>
-                <div class='progress-wrap'>
-                    <div class='progress-neg' style='width:{neg}%;'></div>
-                </div>
-                <div style='margin-top:16px;font-size:11px;color:#3a3a5a;'>
-                    Director: {m['director']} · Model confidence: {m['confidence']}%
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            if st.button("+ Add to Watchlist", key="home_watch"):
-                if m["title"] not in [w["title"] for w in st.session_state.watchlist]:
-                    st.session_state.watchlist.append({"title": m["title"], "status": "Want to Watch", "sentiment": f"{m['score']}%"})
-                    st.success(f"Added '{m['title']}' to watchlist!")
+        show_movie_result(st.session_state.search_data, key_suffix="home")
 
     # Popular searches
-    st.markdown("<div class='section-title'>Popular Searches</div>", unsafe_allow_html=True)
-    popular = ["RRR", "Parasite", "Spirited Away", "Amelie", "3 Idiots", "City of God", "Life Is Beautiful", "Inception"]
+    st.markdown("<div class='section-title'>Popular Around the World</div>", unsafe_allow_html=True)
+    popular = [
+        "RRR", "Parasite", "Spirited Away", "Amelie",
+        "3 Idiots", "City of God", "Life Is Beautiful", "Inception",
+        "Dangal", "Oldboy", "Intouchables", "A Separation"
+    ]
     cols = st.columns(4)
     for i, title in enumerate(popular):
         if cols[i % 4].button(title, key=f"pop{i}", use_container_width=True):
             with st.spinner(f"Analyzing {title}..."):
                 result = get_movie_sentiment(title)
+            if result:
                 st.session_state.search_data = result
             st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════
-# SEARCH PAGE
+# SEARCH
 # ══════════════════════════════════════════════════════════════════════
 elif st.session_state.page == "Search":
 
     st.markdown("<div class='page-header'>Search Any Movie</div>", unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Search any film from anywhere in the world — our AI analyzes its reviews and gives a live sentiment score</div>", unsafe_allow_html=True)
+    st.markdown("<div class='page-sub'>Search any film from any country — AI analyzes its reviews and gives a live sentiment score</div>", unsafe_allow_html=True)
 
     col_s, col_b = st.columns([4, 1])
     with col_s:
-        query = st.text_input("", placeholder="Type any movie title from any country...", label_visibility="collapsed", key="search_q")
+        query = st.text_input(
+            "",
+            placeholder="Type any movie title...",
+            label_visibility="collapsed",
+            key="search_q"
+        )
     with col_b:
         search_btn = st.button("Analyze", use_container_width=True, key="search_btn")
 
     if search_btn and query:
         with st.spinner(f"Fetching '{query}' and analyzing sentiment..."):
             result = get_movie_sentiment(query)
-
         if result:
-            m        = result
-            b_cls, b_txt = badge_html(m["score"])
-            neg      = 100 - m["score"]
-
-            col_poster, col_info = st.columns([1, 2.5])
-
-            with col_poster:
-                if m["poster"] and m["poster"] != "N/A":
-                    st.image(m["poster"], width=220)
-                else:
-                    st.markdown("""
-                    <div style='background:#0d0d1f;border:1px solid #1e1e3a;
-                                border-radius:12px;width:220px;height:300px;
-                                display:flex;align-items:center;
-                                justify-content:center;font-size:56px;'>🎬</div>
-                    """, unsafe_allow_html=True)
-
-            with col_info:
-                st.markdown(f"""
-                <div class='search-card'>
-                    <div style='font-family:"Playfair Display",serif;
-                                font-size:2rem;color:#e8e4f0;
-                                font-weight:700;margin-bottom:4px;'>
-                        {m['title']}
-                    </div>
-                    <div style='font-size:11px;color:#3a3a5a;
-                                text-transform:uppercase;letter-spacing:0.1em;
-                                margin-bottom:8px;'>
-                        {m['genre']} · {m['year']} · {m['country']}
-                    </div>
-                    <div style='font-size:11px;color:#3a3a5a;margin-bottom:12px;'>
-                        Language: {m['language']} · Runtime: {m['runtime']} · IMDB: {m['imdb']}
-                    </div>
-                    <div style='font-size:13px;color:#6060a0;margin-bottom:16px;
-                                font-style:italic;line-height:1.6;'>
-                        {m['plot'][:250]}...
-                    </div>
-                    <div style='margin-bottom:16px;'>
-                        <span class='{b_cls}'>{b_txt}</span>
-                        <span style='font-size:2rem;font-weight:700;
-                                     color:{"#a78bfa" if m["score"]>=75 else "#fbbf24" if m["score"]>=50 else "#f87171"};
-                                     margin-left:16px;
-                                     font-family:"Playfair Display",serif;'>
-                            {m['score']}%
-                        </span>
-                        <span style='font-size:12px;color:#3a3a5a;margin-left:8px;'>
-                            positive sentiment
-                        </span>
-                    </div>
-                    <div style='display:flex;justify-content:space-between;
-                                font-size:12px;color:#3a3a5a;margin-bottom:4px;'>
-                        <span>Positive</span><span>{m['score']}%</span>
-                    </div>
-                    <div class='progress-wrap'>
-                        <div class='{bar_cls(m["score"])}' style='width:{m["score"]}%;'></div>
-                    </div>
-                    <div style='display:flex;justify-content:space-between;
-                                font-size:12px;color:#3a3a5a;margin:6px 0 4px;'>
-                        <span>Negative</span><span>{neg}%</span>
-                    </div>
-                    <div class='progress-wrap'>
-                        <div class='progress-neg' style='width:{neg}%;'></div>
-                    </div>
-                    <div style='margin-top:12px;font-size:11px;color:#3a3a5a;'>
-                        Directed by {m['director']} ·
-                        Model confidence: {m['confidence']}% ·
-                        {m['awards'][:60] if m['awards'] != "N/A" else ""}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                col_w, col_a = st.columns(2)
-                with col_w:
-                    if st.button("+ Add to Watchlist", use_container_width=True, key="s_watch"):
-                        if m["title"] not in [w["title"] for w in st.session_state.watchlist]:
-                            st.session_state.watchlist.append({"title": m["title"], "status": "Want to Watch", "sentiment": f"{m['score']}%"})
-                            st.success(f"Added '{m['title']}'!")
-                with col_a:
-                    if st.button("Analyze a Review →", use_container_width=True, key="s_analyze"):
-                        st.session_state.page = "Sentiment"
-                        st.rerun()
+            show_movie_result(result, key_suffix="search")
+            if st.button("Analyze a Review →", use_container_width=True, key="goto_sentiment"):
+                st.session_state.page = "Sentiment"
+                st.rerun()
         else:
             st.error(f"Could not find '{query}'. Check the spelling and try again.")
 
-    # Suggestions
-    st.markdown("<div class='section-title'>Try These</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>Try These Films</div>", unsafe_allow_html=True)
     suggestions = [
         "RRR", "Parasite", "Spirited Away", "Amelie",
         "3 Idiots", "City of God", "Life Is Beautiful",
@@ -702,9 +613,7 @@ elif st.session_state.page == "Search":
             with st.spinner(f"Analyzing {s}..."):
                 r = get_movie_sentiment(s)
             if r:
-                st.session_state.search_data = r
-                st.session_state.page = "Home"
-                st.rerun()
+                show_movie_result(r, key_suffix=f"sug_{i}")
 
 # ══════════════════════════════════════════════════════════════════════
 # SENTIMENT ANALYSIS
@@ -712,7 +621,7 @@ elif st.session_state.page == "Search":
 elif st.session_state.page == "Sentiment":
 
     st.markdown("<div class='page-header'>Analyze a Review</div>", unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Paste any movie review — our DistilBERT model tells you if it is positive or negative</div>", unsafe_allow_html=True)
+    st.markdown("<div class='page-sub'>Paste any movie review — DistilBERT tells you if it is positive or negative</div>", unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.markdown("<div class='stat-card'><div class='stat-val'>86.4%</div><div class='stat-lbl'>Accuracy</div></div>", unsafe_allow_html=True)
@@ -722,16 +631,23 @@ elif st.session_state.page == "Sentiment":
 
     col_l, col_r = st.columns([1.3, 1])
     with col_l:
-        movie_name = st.text_input("", placeholder="Movie title (optional)...", label_visibility="collapsed", key="rev_title")
-        review     = st.text_area("", placeholder="Paste any movie review here...", height=160, label_visibility="collapsed", key="rev_text")
-
+        movie_name = st.text_input(
+            "", placeholder="Movie title (optional)...",
+            label_visibility="collapsed", key="rev_title"
+        )
+        review = st.text_area(
+            "", placeholder="Paste any movie review here...",
+            height=160, label_visibility="collapsed", key="rev_text"
+        )
         col_a, col_w = st.columns(2)
         with col_a:
             analyze = st.button("Analyze Sentiment", use_container_width=True)
         with col_w:
             if st.button("+ Watchlist", use_container_width=True) and movie_name:
                 if movie_name not in [w["title"] for w in st.session_state.watchlist]:
-                    st.session_state.watchlist.append({"title": movie_name, "status": "Want to Watch", "sentiment": "—"})
+                    st.session_state.watchlist.append({
+                        "title": movie_name, "status": "Want to Watch", "sentiment": "—"
+                    })
                     st.success(f"Added '{movie_name}'!")
 
         st.markdown("<div style='margin-top:1rem;font-size:10px;color:#3a3a5a;text-transform:uppercase;letter-spacing:0.15em;'>Sample reviews</div>", unsafe_allow_html=True)
@@ -751,7 +667,6 @@ elif st.session_state.page == "Sentiment":
         for i, s in enumerate(samples[3:]):
             if r2[i].button(s[:20]+"...", key=f"sb{i}"):
                 st.session_state["picked"] = s
-
         if "picked" in st.session_state:
             review = st.session_state["picked"]
 
@@ -761,14 +676,10 @@ elif st.session_state.page == "Sentiment":
                 res   = classifier(review[:512])[0]
                 label = "POSITIVE" if res["label"] == "LABEL_1" else "NEGATIVE"
                 conf  = round(res["score"] * 100, 2)
-
             st.session_state.analyzed.append({
-                "review":     review[:60],
-                "label":      label,
-                "confidence": conf,
-                "movie":      movie_name or "Unknown"
+                "review": review[:60], "label": label,
+                "confidence": conf, "movie": movie_name or "Unknown"
             })
-
             if label == "POSITIVE":
                 st.markdown(f"""
                 <div class='result-pos'>
@@ -786,7 +697,9 @@ elif st.session_state.page == "Sentiment":
                     </div>
                     <div style='font-size:2.5rem;font-weight:700;color:#a78bfa;
                                 font-family:"Playfair Display",serif;'>{conf}%</div>
-                    <div style='font-size:11px;color:#3a3a5a;margin-top:4px;'>confidence</div>
+                    <div style='font-size:11px;color:#3a3a5a;margin-top:4px;'>
+                        confidence
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -806,7 +719,9 @@ elif st.session_state.page == "Sentiment":
                     </div>
                     <div style='font-size:2.5rem;font-weight:700;color:#f87171;
                                 font-family:"Playfair Display",serif;'>{conf}%</div>
-                    <div style='font-size:11px;color:#3a3a5a;margin-top:4px;'>confidence</div>
+                    <div style='font-size:11px;color:#3a3a5a;margin-top:4px;'>
+                        confidence
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
         else:
@@ -857,14 +772,22 @@ elif st.session_state.page == "Watchlist":
 
     col_a, col_b, col_c = st.columns([2.5, 1.5, 1])
     with col_a:
-        new_film = st.text_input("", placeholder="Add any movie title...", label_visibility="collapsed")
+        new_film = st.text_input(
+            "", placeholder="Add any movie title...",
+            label_visibility="collapsed"
+        )
     with col_b:
-        new_status = st.selectbox("", ["Want to Watch", "Watching", "Watched"], label_visibility="collapsed")
+        new_status = st.selectbox(
+            "", ["Want to Watch", "Watching", "Watched"],
+            label_visibility="collapsed"
+        )
     with col_c:
         if st.button("Add", use_container_width=True):
             if new_film:
                 if new_film not in [w["title"] for w in st.session_state.watchlist]:
-                    st.session_state.watchlist.append({"title": new_film, "status": new_status, "sentiment": "—"})
+                    st.session_state.watchlist.append({
+                        "title": new_film, "status": new_status, "sentiment": "—"
+                    })
                     st.success(f"Added '{new_film}'!")
                 else:
                     st.warning("Already in watchlist!")
@@ -873,14 +796,12 @@ elif st.session_state.page == "Watchlist":
         want  = sum(1 for w in st.session_state.watchlist if w["status"] == "Want to Watch")
         watch = sum(1 for w in st.session_state.watchlist if w["status"] == "Watching")
         done  = sum(1 for w in st.session_state.watchlist if w["status"] == "Watched")
-
         c1, c2, c3 = st.columns(3)
         with c1: st.markdown(f"<div class='stat-card'><div class='stat-val'>{want}</div><div class='stat-lbl'>Want to Watch</div></div>", unsafe_allow_html=True)
         with c2: st.markdown(f"<div class='stat-card'><div class='stat-val'>{watch}</div><div class='stat-lbl'>Watching</div></div>", unsafe_allow_html=True)
         with c3: st.markdown(f"<div class='stat-card'><div class='stat-val'>{done}</div><div class='stat-lbl'>Watched</div></div>", unsafe_allow_html=True)
 
         st.markdown("<div class='section-title'>My Films</div>", unsafe_allow_html=True)
-
         for i, film in enumerate(st.session_state.watchlist):
             sc = {"Watched":"#a78bfa","Watching":"#fbbf24","Want to Watch":"#4a4a8a"}.get(film["status"],"#888")
             c1, c2, c3, c4 = st.columns([3, 1.5, 1.5, 0.5])
@@ -907,10 +828,12 @@ elif st.session_state.page == "Watchlist":
                 </div>
                 """, unsafe_allow_html=True)
             with c3:
-                ns = st.selectbox("",
+                ns = st.selectbox(
+                    "",
                     ["Want to Watch","Watching","Watched"],
                     index=["Want to Watch","Watching","Watched"].index(film["status"]),
-                    key=f"sel{i}", label_visibility="collapsed")
+                    key=f"sel{i}", label_visibility="collapsed"
+                )
                 if ns != film["status"]:
                     st.session_state.watchlist[i]["status"] = ns
                     st.rerun()
