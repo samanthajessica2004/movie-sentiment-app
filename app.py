@@ -142,20 +142,20 @@ def get_movie_data(title):
         return None
     score = calculate_score(movie)
     return {
-        "title":    movie.get("Title", title),
-        "year":     movie.get("Year", "—"),
-        "genre":    movie.get("Genre", "—").split(",")[0].strip().upper(),
-        "country":  movie.get("Country", "—").split(",")[0].strip(),
-        "director": movie.get("Director", "—"),
-        "plot":     movie.get("Plot", "—"),
-        "poster":   movie.get("Poster", "N/A"),
-        "imdb":     movie.get("imdbRating", "—"),
-        "runtime":  movie.get("Runtime", "—"),
-        "language": movie.get("Language", "—").split(",")[0].strip(),
-        "awards":   movie.get("Awards", "N/A"),
-        "actors":   movie.get("Actors", "—"),
-        "score":    score,
-    }
+    "title":    movie.get("Title",    title),
+    "year":     movie.get("Year",     "—"),
+    "genre":    movie.get("Genre",    "—").split(",")[0].strip().upper(),
+    "country":  movie.get("Country",  "—").split(",")[0].strip(),
+    "director": movie.get("Director", "—"),
+    "plot":     movie.get("Plot",     "—"),
+    "poster":   movie.get("Poster",   "N/A"),
+    "imdb":     movie.get("imdbRating","—"),
+    "runtime":  movie.get("Runtime",  "—"),
+    "language": movie.get("Language", "—").split(",")[0].strip(),
+    "awards":   movie.get("Awards",   "N/A"),
+    "actors":   movie.get("Actors",   "—"),
+    "score":    score,
+}
 
 # ── Helpers ────────────────────────────────────────────────────────────
 def badge_html(score):
@@ -206,7 +206,7 @@ def show_result(m, key_suffix=""):
                 {m['plot'][:220]}...
             </div>
             <div style='font-size:12px;color:#3a3a5a;margin-bottom:16px;'>
-                🎬 {m['actors'][:60]}
+                🎬 {m.get('actors', '—')[:60]}
             </div>
             <div style='display:flex;align-items:center;gap:12px;margin-bottom:16px;'>
                 <span class='{b_cls}'>{b_txt}</span>
