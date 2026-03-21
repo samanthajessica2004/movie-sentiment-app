@@ -311,15 +311,24 @@ classifier = load_model()
 # ── API Functions ──────────────────────────────────────────────────────
 @st.cache_data(ttl=3600)
 def fetch_movie(title):
-    """Fetch movie details from OMDB"""
     try:
-        url = f"http://www.omdbapi.com/?t={requests.utils.quote(title)}&apikey={OMDB_KEY}"
+        url = f"https://www.omdbapi.com/?t={requests.utils.quote(title)}&apikey={OMDB_KEY}"
         r   = requests.get(url, timeout=10)
         d   = r.json()
         if d.get("Response") == "True":
             return d
-    except:
-        pass
+        else:
+            # Try searching by keyword if exact match fails
+            url2 = f"https://www.omdbapi.com/?s={requests.utils.quote(title)}&apikey={OMDB_KEY}"
+            r2   = requests.get(url2, timeout=10)
+            d2   = r2.json()
+            if d2.get("Response") == "True":
+                first = d2["Search"][0]["imdbID"]
+                url3  = f"https://www.omdbapi.com/?i={first}&apikey={OMDB_KEY}"
+                r3    = requests.get(url3, timeout=10)
+                return r3.json()
+    except Exception as e:
+        st.error(f"API error: {e}")
     return None
 
 @st.cache_data(ttl=3600)
@@ -485,15 +494,26 @@ if st.session_state.page == "Home":
     st.markdown("<p style='color:#3a3a5a;font-size:13px;'>Type any movie title from any country — Bollywood, Hollywood, Korean, French, Japanese and more</p>", unsafe_allow_html=True)
 
     col_s, col_b = st.columns([4, 1])
-    with col_s:
-        home_q = st.text_input("", placeholder="e.g. RRR, Parasite, Amelie, Spirited Away, 3 Idiots...", label_visibility="collapsed", key="home_search")
-    with col_b:
-        home_btn = st.button("Search", use_container_width=True, key="home_btn")
+with col_s:
+    home_q = st.text_input(
+        "",
+        placeholder="e.g. RRR, Parasite, Amelie, Spirited Away, 3 Idiots...",
+        label_visibility="collapsed",
+        key="home_search"
+    )
+with col_b:
+    home_btn = st.button("Search", use_container_width=True, key="home_btn")
 
-    if home_btn and home_q:
+# Fix — trigger on button OR on Enter key
+if home_btn or (home_q and home_q != st.session_state.get("last_query", "")):
+    if home_q:
+        st.session_state.last_query = home_q
         with st.spinner(f"Fetching and analyzing '{home_q}'..."):
             result = get_movie_sentiment(home_q)
-            st.session_state.search_data = result
+            if result:
+                st.session_state.search_data = result
+            else:
+                st.error(f"Could not find '{home_q}'. Try checking the spelling.") = result
 
     if st.session_state.search_data:
         m        = st.session_state.search_data
