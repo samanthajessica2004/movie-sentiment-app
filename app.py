@@ -15,8 +15,7 @@ st.set_page_config(
 # ── PASTE YOUR OMDB KEY HERE ──────────────────────────────────────────
 OMDB_KEY = "c1c0e742"
 # ─────────────────────────────────────────────────────────────────────
-test = requests.get(f"http://www.omdbapi.com/?t=Inception&apikey={OMDB_KEY}")
-st.write("API Response:", test.json())
+
 
 
 st.markdown("""
