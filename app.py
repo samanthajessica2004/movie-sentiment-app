@@ -705,20 +705,53 @@ if st.session_state.page == "Home":
     if st.session_state.search_data:
         show_result(st.session_state.search_data, "home")
 
-    # Genre pills
-    st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div>
-        <span class='genre-pill genre-pill-active'>🔥 Trending</span>
-        <span class='genre-pill'>💥 Action</span>
-        <span class='genre-pill'>❤️ Romance</span>
-        <span class='genre-pill'>🎭 Drama</span>
-        <span class='genre-pill'>😂 Comedy</span>
-        <span class='genre-pill'>👻 Horror</span>
-        <span class='genre-pill'>🚀 Sci-Fi</span>
-        <span class='genre-pill'>🎌 Animation</span>
-    </div>
-    """, unsafe_allow_html=True)
+    # Genre filter
+st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
+
+genres = ["All", "Action", "Drama", "Comedy", "Romance", "Horror", "Sci-Fi", "Animation", "Thriller"]
+
+if "selected_genre" not in st.session_state:
+    st.session_state.selected_genre = "All"
+
+cols = st.columns(len(genres))
+for i, genre in enumerate(genres):
+    is_active = st.session_state.selected_genre == genre
+    if cols[i].button(
+        genre,
+        key=f"genre_{genre}",
+        use_container_width=True,
+        type="primary" if is_active else "secondary"
+    ):
+        st.session_state.selected_genre = genre
+        st.rerun()
+
+# Genre movie map
+genre_movies = {
+    "All":       ["Inception", "Parasite", "RRR", "Amelie", "3 Idiots", "City of God", "Spirited Away", "Dangal"],
+    "Action":    ["RRR", "The Dark Knight", "KGF Chapter 2", "Mad Max Fury Road", "Die Hard", "Gladiator"],
+    "Drama":     ["Parasite", "3 Idiots", "Life Is Beautiful", "A Separation", "Dangal", "Forrest Gump"],
+    "Comedy":    ["3 Idiots", "Intouchables", "The Holdovers", "Superbad", "Dumb and Dumber"],
+    "Romance":   ["Amelie", "Past Lives", "Your Name", "Titanic", "La La Land", "Pride and Prejudice"],
+    "Horror":    ["Train to Busan", "Tumbbad", "Get Out", "Hereditary", "The Wailing", "A Quiet Place"],
+    "Sci-Fi":    ["Inception", "Interstellar", "Dune Part Two", "The Matrix", "Arrival", "Blade Runner 2049"],
+    "Animation": ["Spirited Away", "Your Name", "Coco", "WALL-E", "The Lion King", "Grave of the Fireflies"],
+    "Thriller":  ["Parasite", "Oldboy", "Gone Girl", "Saltburn", "Knives Out", "Prisoners"],
+}
+
+selected = st.session_state.selected_genre
+movies_to_show = genre_movies.get(selected, genre_movies["All"])
+
+st.markdown(f"<div class='section-sub'>Showing {selected} films — click any to analyze</div>", unsafe_allow_html=True)
+
+cols = st.columns(4)
+for i, title in enumerate(movies_to_show):
+    if cols[i % 4].button(title, key=f"genre_movie_{i}_{title}", use_container_width=True):
+        with st.spinner(f"Loading {title}..."):
+            r = get_movie_data(title)
+        st.session_state.search_data = r
+        if title not in st.session_state.history:
+            st.session_state.history.append(title)
+        st.rerun()
 
     # Popular around the world
     st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
