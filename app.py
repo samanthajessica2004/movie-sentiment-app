@@ -814,7 +814,7 @@ elif st.session_state.page == "Search":
             if r:
                 if s not in st.session_state.history:
                     st.session_state.history.append(s)
-                show_result(r, f"sg_{i}"))
+                show_result(r, f"sg_{i}")
 
 # ══════════════════════════════════════════════════════════════════════
 # COMPARE
