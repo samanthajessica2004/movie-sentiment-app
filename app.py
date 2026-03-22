@@ -779,7 +779,8 @@ elif st.session_state.page == "Search":
 
     st.markdown("<div class='page-header'>Search Any Movie</div>",
                 unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Find any film from any country — scores from IMDB, Rotten Tomatoes and Metacritic</div>", unsafe_allow_html=True)
+    st.markdown("<div class='page-sub'>Find any film from any country</div>",
+                unsafe_allow_html=True)
 
     col_s, col_b = st.columns([4, 1])
     with col_s:
@@ -804,17 +805,16 @@ elif st.session_state.page == "Search":
         "3 Idiots",   "City of God", "Inception",      "Dangal",
         "Tumbbad",    "Jai Bhim",    "Train to Busan", "Your Name",
         "Kantara",    "Oldboy",      "Intouchables",   "Interstellar",
-        "Capernaum",  "A Separation","Life Is Beautiful","Pan's Labyrinth",
     ]
-    cols = st.columns(5)
+    cols = st.columns(4)
     for i, s in enumerate(suggestions):
-        if cols[i % 5].button(s, key=f"sg{i}", use_container_width=True):
+        if cols[i % 4].button(s, key=f"sg{i}", use_container_width=True):
             with st.spinner(f"Loading {s}..."):
                 r = get_movie_data(s)
             if r:
                 if s not in st.session_state.history:
                     st.session_state.history.append(s)
-                show_result(r, f"sg_{i}")
+                show_result(r, f"sg_{i}")}")
 
 # ══════════════════════════════════════════════════════════════════════
 # COMPARE
