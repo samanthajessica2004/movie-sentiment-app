@@ -14,6 +14,8 @@ st.set_page_config(
 
 OMDB_KEY = "c1c0e742"
 
+
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
@@ -705,6 +707,32 @@ if st.session_state.page == "Home":
     if st.session_state.search_data:
         show_result(st.session_state.search_data, "home")
 
+
+# ✅ SELECT BY GENRE
+GENRE_MAP = {
+    "Action": "action",
+    "Comedy": "comedy",
+    "Horror": "horror",
+    "Romance": "romance",
+    "Sci-Fi": "science fiction",
+    "Drama": "drama",
+    "Thriller": "thriller"
+}
+
+st.title("🎬 Movie Sentiment Analyzer")
+
+# your search bar (keep it as is)
+query = st.text_input("Search movie")
+
+# ✅ ADD THIS BELOW SEARCH BAR
+st.subheader("🎭 Browse by Genre")
+
+cols = st.columns(len(GENRE_MAP))
+
+for i, genre in enumerate(GENRE_MAP.keys()):
+    if cols[i].button(genre):
+        st.session_state["selected_genre"] = GENRE_MAP[genre]
+
     # Genre pills
     st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
     st.markdown("""
@@ -719,6 +747,28 @@ if st.session_state.page == "Home":
         <span class='genre-pill'>🎌 Animation</span>
     </div>
     """, unsafe_allow_html=True)
+
+    # ✅ ADD THIS BELOW BUTTONS
+if "selected_genre" in st.session_state:
+    genre_query = st.session_state["selected_genre"]
+
+    st.write(f"### Results for: {genre_query}")
+
+    url = f"https://www.omdbapi.com/?s={genre_query}&apikey={OMDB_KEY}"
+    response = requests.get(url)
+    data = response.json()
+
+    if data.get("Search"):
+        for movie in data["Search"]:
+            col1, col2 = st.columns([1, 3])
+
+            with col1:
+                st.image(movie["Poster"], width=100)
+
+            with col2:
+                st.write(f"**{movie['Title']} ({movie['Year']})**")
+    else:
+        st.warning("No movies found.")
 
     # Popular around the world
     st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
