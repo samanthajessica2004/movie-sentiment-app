@@ -769,7 +769,7 @@ for i, movie in enumerate(movies):
         st.image(movie["Poster"], use_container_width=True)
         st.caption(f"{movie['Title']} ({movie['Year']})")
 else:
-        st.warning("No movies found.")
+    st.warning("No movies found.")
 
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
