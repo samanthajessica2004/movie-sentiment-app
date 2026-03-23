@@ -764,10 +764,10 @@ for i, t in enumerate(popular):
     if cols[i % 4].button(t, key=f"p{i}", use_container_width=True):
          with st.spinner(f"Loading {t}..."):
                 r = get_movie_data(t)
-            st.session_state.search_data = r
-            if t not in st.session_state.history:
+         st.session_state.search_data = r
+         if t not in st.session_state.history:
                 st.session_state.history.append(t)
-            st.rerun()
+         st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
