@@ -18,239 +18,184 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
 
-* { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+* { font-family: 'Inter', sans-serif; }
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 2rem 2rem; max-width: 1400px; }
 
-.stApp {
-    background: linear-gradient(135deg, #e8f4fd 0%, #f0e8fd 50%, #fde8f4 100%);
-    min-height: 100vh;
-}
+.stApp { background: #f8f8f6; }
 
 section[data-testid="stSidebar"] {
-    background: rgba(255,255,255,0.7) !important;
-    backdrop-filter: blur(20px) !important;
-    border-right: 1px solid rgba(255,255,255,0.5) !important;
+    background: #ffffff !important;
+    border-right: 1px solid #ebebeb;
 }
 
 .nav-logo {
     font-family: 'Playfair Display', serif;
     font-size: 1.8rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #1a1a1a;
     padding: 1.5rem 0 0.3rem;
     display: block;
+    letter-spacing: -0.5px;
 }
 
 .nav-sub {
     font-size: 9px;
     letter-spacing: 0.2em;
-    color: #9ca3af !important;
+    color: #aaaaaa !important;
     text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     display: block;
 }
 
 .nav-stat {
     font-size: 11px;
-    color: #9ca3af !important;
+    color: #aaaaaa !important;
     margin-top: 4px;
     display: block;
 }
 
 .stButton button {
-    background: rgba(255,255,255,0.8) !important;
-    color: #374151 !important;
+    background: #1a1a1a !important;
+    color: #ffffff !important;
     font-weight: 500 !important;
-    border: 1px solid rgba(255,255,255,0.9) !important;
-    border-radius: 12px !important;
+    border: none !important;
+    border-radius: 8px !important;
     font-size: 13px !important;
-    backdrop-filter: blur(10px) !important;
     transition: all 0.2s !important;
 }
 
 .stButton button:hover {
-    background: rgba(99,102,241,0.1) !important;
-    border-color: rgba(99,102,241,0.3) !important;
-    color: #6366f1 !important;
+    background: #333333 !important;
     transform: translateY(-1px) !important;
 }
 
 .stTextArea textarea {
-    background: rgba(255,255,255,0.8) !important;
-    border: 1px solid rgba(255,255,255,0.9) !important;
-    border-radius: 14px !important;
-    color: #1f2937 !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 10px !important;
+    color: #1a1a1a !important;
     font-size: 14px !important;
-    backdrop-filter: blur(10px) !important;
 }
 
 .stTextInput input {
-    background: rgba(255,255,255,0.8) !important;
-    border: 1px solid rgba(255,255,255,0.9) !important;
-    border-radius: 10px !important;
-    color: #1f2937 !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    color: #1a1a1a !important;
     font-size: 14px !important;
-    backdrop-filter: blur(10px) !important;
 }
 
-/* Glassmorphism card */
-.glass-card {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.8);
+.hero-section {
+    background: #ffffff;
+    border: 1px solid #ebebeb;
     border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 8px 32px rgba(99,102,241,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(99,102,241,0.12);
-}
-
-/* Hero banner */
-.hero-banner {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-    border-radius: 24px;
     padding: 3rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
-    color: white;
 }
 
-.hero-banner::before {
-    content: '';
+.hero-accent {
     position: absolute;
-    top: -50%; right: -20%;
-    width: 400px; height: 400px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
-}
-
-.hero-banner::after {
-    content: '';
-    position: absolute;
-    bottom: -40%; left: -10%;
+    top: 0; right: 0;
     width: 300px; height: 300px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
+    background: radial-gradient(circle at top right,
+        rgba(99,102,241,0.06), transparent 70%);
 }
 
 .hero-title {
     font-family: 'Playfair Display', serif;
     font-size: 3rem;
     font-weight: 700;
-    color: white;
+    color: #1a1a1a;
     margin-bottom: 0.5rem;
     line-height: 1.2;
-    position: relative;
-    z-index: 1;
 }
+
+.hero-title span { color: #6366f1; }
 
 .hero-sub {
     font-size: 14px;
-    color: rgba(255,255,255,0.8);
-    margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;
+    color: #888888;
+    margin-bottom: 2rem;
+    line-height: 1.7;
 }
 
 .hero-badge {
     display: inline-block;
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: white;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
     font-size: 11px;
-    padding: 4px 14px;
+    padding: 4px 12px;
     border-radius: 20px;
     margin-right: 6px;
     margin-bottom: 6px;
-    position: relative;
-    z-index: 1;
 }
 
-/* Stat cards */
 .stat-card {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.9);
-    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-radius: 14px;
     padding: 1.25rem;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(99,102,241,0.06);
+    transition: box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 
 .stat-val {
     font-size: 1.8rem;
     font-weight: 700;
     font-family: 'Playfair Display', serif;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #1a1a1a;
 }
 
 .stat-lbl {
     font-size: 10px;
-    color: #9ca3af;
+    color: #aaaaaa;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-top: 5px;
 }
 
-/* Genre pills */
-.genre-pill {
-    display: inline-block;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.9);
-    color: #6b7280;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 6px 16px;
-    border-radius: 20px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.genre-pill-active {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    border-color: transparent;
-}
-
-/* Movie poster card */
-.poster-card {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.8);
+.movie-card {
+    background: #ffffff;
+    border: 1px solid #ebebeb;
     border-radius: 16px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(99,102,241,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-    height: 100%;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s;
 }
 
-.poster-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(99,102,241,0.15);
+.movie-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 
-/* Badges */
+.movie-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+    font-family: 'Playfair Display', serif;
+}
+
+.movie-meta {
+    font-size: 10px;
+    color: #aaaaaa;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+}
+
 .badge-pos {
     display: inline-block;
-    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-    color: #065f46;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
     font-size: 10px;
     font-weight: 600;
     padding: 3px 10px;
@@ -260,8 +205,9 @@ section[data-testid="stSidebar"] {
 
 .badge-neg {
     display: inline-block;
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
     font-size: 10px;
     font-weight: 600;
     padding: 3px 10px;
@@ -271,8 +217,9 @@ section[data-testid="stSidebar"] {
 
 .badge-mix {
     display: inline-block;
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #d97706;
     font-size: 10px;
     font-weight: 600;
     padding: 3px 10px;
@@ -280,118 +227,113 @@ section[data-testid="stSidebar"] {
     text-transform: uppercase;
 }
 
-/* Progress bars */
 .progress-wrap {
-    background: rgba(0,0,0,0.06);
+    background: #f3f4f6;
     border-radius: 50px;
-    height: 8px;
+    height: 6px;
     overflow: hidden;
     margin: 8px 0;
 }
 
-.progress-pos { height:100%; background:linear-gradient(90deg,#34d399,#10b981); border-radius:50px; }
-.progress-mix { height:100%; background:linear-gradient(90deg,#fbbf24,#f59e0b); border-radius:50px; }
-.progress-neg { height:100%; background:linear-gradient(90deg,#f87171,#ef4444); border-radius:50px; }
+.progress-pos { height:100%; background: #22c55e; border-radius:50px; }
+.progress-mix { height:100%; background: #f59e0b; border-radius:50px; }
+.progress-neg { height:100%; background: #ef4444; border-radius:50px; }
 
-/* Result cards */
 .result-pos {
-    background: linear-gradient(135deg, rgba(209,250,229,0.8), rgba(167,243,208,0.8));
-    backdrop-filter: blur(20px);
-    border: 1.5px solid rgba(167,243,208,0.9);
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
     border-radius: 20px;
     padding: 2rem;
     text-align: center;
 }
 
 .result-neg {
-    background: linear-gradient(135deg, rgba(254,226,226,0.8), rgba(254,202,202,0.8));
-    backdrop-filter: blur(20px);
-    border: 1.5px solid rgba(254,202,202,0.9);
+    background: #fef2f2;
+    border: 1.5px solid #fecaca;
     border-radius: 20px;
     padding: 2rem;
     text-align: center;
 }
 
-.search-result-card {
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.9);
+.search-card {
+    background: #ffffff;
+    border: 1px solid #ebebeb;
     border-radius: 20px;
     padding: 2rem;
     margin-top: 1rem;
-    box-shadow: 0 8px 32px rgba(99,102,241,0.1);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 
 .section-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.3rem;
-    color: #1f2937;
-    margin: 1.5rem 0 0.3rem;
+    color: #1a1a1a;
+    margin: 1.5rem 0 1rem;
     font-weight: 600;
 }
 
-.section-sub {
-    font-size: 12px;
-    color: #9ca3af;
+.section-line {
+    width: 32px;
+    height: 2px;
+    background: #6366f1;
+    border-radius: 2px;
     margin-bottom: 1rem;
 }
 
 .page-header {
     font-family: 'Playfair Display', serif;
     font-size: 2.2rem;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #1a1a1a;
     margin: 1.5rem 0 0.3rem;
     font-weight: 700;
 }
 
 .page-sub {
     font-size: 13px;
-    color: #9ca3af;
+    color: #aaaaaa;
     margin-bottom: 1.5rem;
 }
 
-.daily-card {
-    background: linear-gradient(135deg,
-        rgba(99,102,241,0.12), rgba(236,72,153,0.08));
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-}
-
-.winner-banner {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+.winner-card {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border-radius: 16px;
     padding: 1.25rem 1.5rem;
     text-align: center;
-    color: white;
     margin: 1rem 0;
+    color: #ffffff;
 }
 
 .compare-card {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.8);
+    background: #ffffff;
+    border: 1.5px solid #ebebeb;
     border-radius: 16px;
     padding: 1.5rem;
 }
 
 .compare-card-winner {
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(99,102,241,0.5);
+    background: #ffffff;
+    border: 2px solid #6366f1;
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(99,102,241,0.15);
 }
+
+.daily-card {
+    background: #ffffff;
+    border: 1px solid #ebebeb;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.tag-up     { font-size:10px; padding:2px 8px; border-radius:4px; background:#f0fdf4; color:#16a34a; font-weight:600; }
+.tag-steady { font-size:10px; padding:2px 8px; border-radius:4px; background:#fffbeb; color:#d97706; font-weight:600; }
+.tag-down   { font-size:10px; padding:2px 8px; border-radius:4px; background:#fef2f2; color:#dc2626; font-weight:600; }
 
 .footer {
     text-align: center;
     padding: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.5);
-    color: #d1d5db;
+    border-top: 1px solid #ebebeb;
+    color: #cccccc;
     font-size: 11px;
     margin-top: 3rem;
     letter-spacing: 0.05em;
@@ -438,11 +380,11 @@ def fetch_movie(title):
 
 def calculate_score(movie_data):
     scores = []
-    imdb = movie_data.get("imdbRating","N/A")
+    imdb = movie_data.get("imdbRating", "N/A")
     if imdb != "N/A":
-        try: scores.append((float(imdb)/10)*100)
+        try: scores.append((float(imdb) / 10) * 100)
         except: pass
-    for r in movie_data.get("Ratings",[]):
+    for r in movie_data.get("Ratings", []):
         if r.get("Source") == "Rotten Tomatoes":
             try: scores.append(int(r["Value"].replace("%","")))
             except: pass
@@ -458,7 +400,7 @@ def get_movie_data(title):
     return {
         "title":    movie.get("Title",    title),
         "year":     movie.get("Year",     "—"),
-        "genre":    movie.get("Genre",    "—").split(",")[0].strip(),
+        "genre":    movie.get("Genre",    "—").split(",")[0].strip().upper(),
         "country":  movie.get("Country",  "—").split(",")[0].strip(),
         "director": movie.get("Director", "—"),
         "plot":     movie.get("Plot",     "—"),
@@ -479,14 +421,14 @@ def get_daily_movie():
         "Pan's Labyrinth","Jai Bhim","Interstellar","Tumbbad"
     ]
     today = datetime.date.today().strftime("%Y-%m-%d")
-    idx   = int(hashlib.md5(today.encode()).hexdigest(),16) % len(picks)
+    idx   = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(picks)
     return picks[idx]
 
 # ── Helpers ────────────────────────────────────────────────────────────
 def badge_html(score):
-    if score >= 70: return "badge-pos","Positive"
-    if score >= 50: return "badge-mix","Mixed"
-    return "badge-neg","Negative"
+    if score >= 70: return "badge-pos", "Positive"
+    if score >= 50: return "badge-mix", "Mixed"
+    return "badge-neg", "Negative"
 
 def bar_cls(score):
     if score >= 70: return "progress-pos"
@@ -494,9 +436,9 @@ def bar_cls(score):
     return "progress-neg"
 
 def score_color(score):
-    if score >= 70: return "#10b981"
-    if score >= 50: return "#f59e0b"
-    return "#ef4444"
+    if score >= 70: return "#16a34a"
+    if score >= 50: return "#d97706"
+    return "#dc2626"
 
 def show_result(m, key_suffix=""):
     b_cls, b_txt = badge_html(m["score"])
@@ -509,63 +451,53 @@ def show_result(m, key_suffix=""):
             st.image(m["poster"], width=200)
         else:
             st.markdown("""
-            <div style='background:rgba(255,255,255,0.6);
-                        backdrop-filter:blur(10px);
-                        border:1px solid rgba(255,255,255,0.8);
-                        border-radius:16px;width:200px;height:280px;
+            <div style='background:#f3f4f6;border:1px solid #e5e7eb;
+                        border-radius:12px;width:200px;height:280px;
                         display:flex;align-items:center;
                         justify-content:center;font-size:48px;'>🎬</div>
             """, unsafe_allow_html=True)
 
     with col_d:
         st.markdown(f"""
-        <div class='search-result-card'>
-            <div style='font-family:"Playfair Display",serif;
-                        font-size:1.8rem;color:#1f2937;
-                        font-weight:700;margin-bottom:4px;'>
+        <div class='search-card'>
+            <div style='font-family:"Playfair Display",serif;font-size:1.8rem;
+                        color:#1a1a1a;font-weight:700;margin-bottom:4px;'>
                 {m['title']}
             </div>
-            <div style='font-size:11px;color:#9ca3af;
-                        text-transform:uppercase;letter-spacing:0.1em;
-                        margin-bottom:8px;'>
+            <div style='font-size:11px;color:#aaaaaa;text-transform:uppercase;
+                        letter-spacing:0.1em;margin-bottom:8px;'>
                 {m['genre']} · {m['year']} · {m['country']} · {m['language']}
             </div>
-            <div style='font-size:13px;color:#6b7280;margin-bottom:12px;
-                        line-height:1.6;'>
+            <div style='font-size:13px;color:#888888;margin-bottom:12px;
+                        line-height:1.6;font-style:italic;'>
                 {m['plot'][:220]}...
             </div>
-            <div style='font-size:12px;color:#9ca3af;margin-bottom:16px;'>
-                🎬 {m.get("actors","—")[:80]}
+            <div style='font-size:12px;color:#aaaaaa;margin-bottom:16px;'>
+                🎬 {m.get('actors','—')[:80]}
             </div>
-            <div style='display:flex;align-items:center;
-                        gap:12px;margin-bottom:16px;'>
+            <div style='display:flex;align-items:center;gap:12px;margin-bottom:16px;'>
                 <span class='{b_cls}'>{b_txt}</span>
-                <span style='font-size:2.2rem;font-weight:700;
-                             color:{sc};font-family:"Playfair Display",serif;'>
+                <span style='font-size:2.2rem;font-weight:700;color:{sc};
+                             font-family:"Playfair Display",serif;'>
                     {m['score']}%
                 </span>
-                <span style='font-size:12px;color:#9ca3af;'>
-                    audience score
-                </span>
+                <span style='font-size:12px;color:#aaaaaa;'>audience score</span>
             </div>
             <div style='display:flex;justify-content:space-between;
-                        font-size:12px;color:#9ca3af;margin-bottom:4px;'>
-                <span>Positive</span>
-                <span style='color:{sc};font-weight:500;'>{m['score']}%</span>
+                        font-size:12px;color:#aaaaaa;margin-bottom:4px;'>
+                <span>Positive reception</span><span style='color:{sc};font-weight:500;'>{m['score']}%</span>
             </div>
             <div class='progress-wrap'>
-                <div class='{bar_cls(m["score"])}' style='width:{m["score"]}%;'>
-                </div>
+                <div class='{bar_cls(m["score"])}' style='width:{m["score"]}%;'></div>
             </div>
             <div style='display:flex;justify-content:space-between;
-                        font-size:12px;color:#9ca3af;margin:6px 0 4px;'>
-                <span>Negative</span>
-                <span style='color:#ef4444;font-weight:500;'>{neg}%</span>
+                        font-size:12px;color:#aaaaaa;margin:6px 0 4px;'>
+                <span>Negative reception</span><span style='color:#ef4444;font-weight:500;'>{neg}%</span>
             </div>
             <div class='progress-wrap'>
                 <div class='progress-neg' style='width:{neg}%;'></div>
             </div>
-            <div style='margin-top:12px;font-size:11px;color:#d1d5db;'>
+            <div style='margin-top:12px;font-size:11px;color:#cccccc;'>
                 Dir: {m['director']} · IMDB: {m['imdb']} · {m['runtime']}
             </div>
         </div>
@@ -586,8 +518,7 @@ def show_result(m, key_suffix=""):
                 else:
                     st.info("Already in watchlist!")
         with c2:
-            share = (f"🎬 {m['title']} scores {m['score']}% "
-                     f"on Cinelytix · cinelytix.streamlit.app")
+            share = f"🎬 {m['title']} scores {m['score']}% on Cinelytix · cinelytix.streamlit.app"
             st.code(share, language=None)
 
 # ── Sidebar ────────────────────────────────────────────────────────────
@@ -597,16 +528,16 @@ with st.sidebar:
     st.markdown("<span class='nav-sub'>Cinematic Intelligence</span>",
                 unsafe_allow_html=True)
 
-    for key, label in {
-        "Home":      "🏠  Home",
-        "Search":    "🔍  Search Movies",
-        "Compare":   "⚖️  Compare Movies",
-        "Sentiment": "🎬  Analyze a Review",
-        "Watchlist": "⭐  My Watchlist",
-    }.items():
-        if st.button(label, use_container_width=True, key=f"nav_{key}"):
-            st.session_state.page = key
-            st.rerun()
+    if st.button("🏠  Home",             use_container_width=True, key="n1"):
+        st.session_state.page = "Home";      st.rerun()
+    if st.button("🔍  Search Movies",    use_container_width=True, key="n2"):
+        st.session_state.page = "Search";    st.rerun()
+    if st.button("⚖️  Compare Movies",   use_container_width=True, key="n3"):
+        st.session_state.page = "Compare";   st.rerun()
+    if st.button("🎬  Analyze a Review", use_container_width=True, key="n4"):
+        st.session_state.page = "Sentiment"; st.rerun()
+    if st.button("⭐  My Watchlist",     use_container_width=True, key="n5"):
+        st.session_state.page = "Watchlist"; st.rerun()
 
     st.markdown("---")
     st.markdown(f"<span class='nav-stat'>Watchlist: {len(st.session_state.watchlist)} films</span>", unsafe_allow_html=True)
@@ -614,7 +545,7 @@ with st.sidebar:
 
     if st.session_state.history:
         st.markdown("---")
-        st.markdown("<span style='font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;'>Recent</span>", unsafe_allow_html=True)
+        st.markdown("<span style='font-size:10px;color:#aaaaaa;text-transform:uppercase;letter-spacing:0.15em;'>Recent searches</span>", unsafe_allow_html=True)
         for h in reversed(st.session_state.history[-5:]):
             if st.button(h, key=f"hist_{h}", use_container_width=True):
                 with st.spinner(f"Loading {h}..."):
@@ -628,591 +559,17 @@ with st.sidebar:
 # ══════════════════════════════════════════════════════════════════════
 if st.session_state.page == "Home":
 
-    # Hero banner
     st.markdown("""
-    <div class='hero-banner'>
-        <div class='hero-title'>The Pulse of Cinema</div>
+    <div class='hero-section'>
+        <div class='hero-accent'></div>
+        <div class='hero-title'>The Pulse of <span>Cinema</span></div>
         <div class='hero-sub'>
             Search any movie from anywhere in the world and get a
-            real AI-powered sentiment score
+            real audience sentiment score powered by AI
         </div>
         <div>
-            <span class='hero-badge'>🤖 DistilBERT AI</span>
-            <span class='hero-badge'>⭐ IMDB + Rotten Tomatoes</span>
-            <span class='hero-badge'>🌍 Any Movie · Any Country</span>
-            <span class='hero-badge'>✨ 86.4% Accuracy</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Stats
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown("<div class='stat-card'><div class='stat-val'>86.4%</div><div class='stat-lbl'>Model Accuracy</div></div>", unsafe_allow_html=True)
-    with c2: st.markdown("<div class='stat-card'><div class='stat-val'>66M</div><div class='stat-lbl'>Parameters</div></div>", unsafe_allow_html=True)
-    with c3: st.markdown("<div class='stat-card'><div class='stat-val'>∞</div><div class='stat-lbl'>Movies Supported</div></div>", unsafe_allow_html=True)
-    with c4: st.markdown(f"<div class='stat-card'><div class='stat-val'>{len(st.session_state.watchlist)}</div><div class='stat-lbl'>Watchlist Films</div></div>", unsafe_allow_html=True)
-
-    # Movie of the day
-    daily_title = get_daily_movie()
-    st.markdown("<div class='section-title'>🎬 Movie of the Day</div>", unsafe_allow_html=True)
-    col_d1, col_d2 = st.columns([3, 1])
-    with col_d1:
-        st.markdown(f"""
-        <div class='daily-card'>
-            <div style='font-size:10px;color:#9ca3af;text-transform:uppercase;
-                        letter-spacing:0.15em;margin-bottom:6px;'>
-                Today · {datetime.date.today().strftime("%B %d, %Y")}
-            </div>
-            <div style='font-family:"Playfair Display",serif;font-size:1.4rem;
-                        background:linear-gradient(135deg,#6366f1,#ec4899);
-                        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-                        font-weight:700;margin-bottom:4px;'>
-                {daily_title}
-            </div>
-            <div style='font-size:12px;color:#9ca3af;'>
-                Click to get the AI sentiment score for today's featured film
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_d2:
-        if st.button("Analyze Today's Film", use_container_width=True, key="daily"):
-            with st.spinner(f"Loading {daily_title}..."):
-                r = get_movie_data(daily_title)
-            st.session_state.search_data = r
-            if daily_title not in st.session_state.history:
-                st.session_state.history.append(daily_title)
-            st.rerun()
-
-    # Search bar
-    st.markdown("<div class='section-title'>Search Any Movie</div>", unsafe_allow_html=True)
-    col_s, col_b = st.columns([4, 1])
-    with col_s:
-        home_q = st.text_input(
-            "", placeholder="RRR, Parasite, Amelie, 3 Idiots, Spirited Away...",
-            label_visibility="collapsed", key="home_q"
-        )
-    with col_b:
-        if st.button("Search", use_container_width=True, key="home_btn"):
-            if home_q.strip():
-                with st.spinner(f"Finding '{home_q}'..."):
-                    r = get_movie_data(home_q)
-                st.session_state.search_data = r
-                if home_q not in st.session_state.history:
-                    st.session_state.history.append(home_q)
-                if not r:
-                    st.error(f"Could not find '{home_q}'.")
-
-    if st.session_state.search_data:
-        show_result(st.session_state.search_data, "home")
-
-   # Genre filter
-st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
-
-genres = ["All", "Action", "Drama", "Comedy", "Romance", "Horror", "Sci-Fi", "Animation", "Thriller"]
-
-if "selected_genre" not in st.session_state:
-    st.session_state.selected_genre = "All"
-
-cols = st.columns(len(genres))
-for i, genre in enumerate(genres):
-    is_active = st.session_state.selected_genre == genre
-    if cols[i].button(
-        genre,
-        key=f"genre_{genre}",
-        use_container_width=True,
-        type="primary" if is_active else "secondary"
-    ):
-        st.session_state.selected_genre = genre
-        st.rerun()
-
-# Genre movie map
-genre_movies = {
-    "All":       ["Inception", "Parasite", "RRR", "Amelie", "3 Idiots", "City of God", "Spirited Away", "Dangal"],
-    "Action":    ["RRR", "The Dark Knight", "KGF Chapter 2", "Mad Max Fury Road", "Die Hard", "Gladiator"],
-    "Drama":     ["Parasite", "3 Idiots", "Life Is Beautiful", "A Separation", "Dangal", "Forrest Gump"],
-    "Comedy":    ["3 Idiots", "Intouchables", "The Holdovers", "Superbad", "Dumb and Dumber"],
-    "Romance":   ["Amelie", "Past Lives", "Your Name", "Titanic", "La La Land", "Pride and Prejudice"],
-    "Horror":    ["Train to Busan", "Tumbbad", "Get Out", "Hereditary", "The Wailing", "A Quiet Place"],
-    "Sci-Fi":    ["Inception", "Interstellar", "Dune Part Two", "The Matrix", "Arrival", "Blade Runner 2049"],
-    "Animation": ["Spirited Away", "Your Name", "Coco", "WALL-E", "The Lion King", "Grave of the Fireflies"],
-    "Thriller":  ["Parasite", "Oldboy", "Gone Girl", "Saltburn", "Knives Out", "Prisoners"],
-}
-
-selected = st.session_state.selected_genre
-movies_to_show = genre_movies.get(selected, genre_movies["All"])
-
-st.markdown(f"<div class='section-sub'>Showing {selected} films — click any to analyze</div>", unsafe_allow_html=True)
-
-cols = st.columns(4)
-for i, title in enumerate(movies_to_show):
-    if cols[i % 4].button(title, key=f"genre_movie_{i}_{title}", use_container_width=True):
-        with st.spinner(f"Loading {title}..."):
-            r = get_movie_data(title)
-        st.session_state.search_data = r
-        if title not in st.session_state.history:
-            st.session_state.history.append(title)
-        st.rerun()
-# ══════════════════════════════════════════════════════════════════════
-# SEARCH
-# ══════════════════════════════════════════════════════════════════════
- elif st.session_state.page == "Search":
-
-    st.markdown("<div class='page-header'>Search Any Movie</div>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Find any film from any country — scores from IMDB, Rotten Tomatoes and Metacritic</div>", unsafe_allow_html=True)
-
-    col_s, col_b = st.columns([4, 1])
-    with col_s:
-        q = st.text_input("", placeholder="Type any movie title...",
-                          label_visibility="collapsed", key="sq")
-    with col_b:
-        if st.button("Analyze", use_container_width=True, key="sbtn"):
-            if q.strip():
-                with st.spinner(f"Finding '{q}'..."):
-                    r = get_movie_data(q)
-                if r:
-                    if q not in st.session_state.history:
-                        st.session_state.history.append(q)
-                    show_result(r, "search")
-                else:
-                    st.error(f"Could not find '{q}'.")
-
-    st.markdown("<div class='section-title'>Try These Films</div>",
-                unsafe_allow_html=True)
-    suggestions = [
-        "RRR",        "Parasite",    "Spirited Away",  "Amelie",
-        "3 Idiots",   "City of God", "Inception",      "Dangal",
-        "Tumbbad",    "Jai Bhim",    "Train to Busan", "Your Name",
-        "Kantara",    "Oldboy",      "Intouchables",   "Interstellar",
-        "Capernaum",  "A Separation","Life Is Beautiful","Pan's Labyrinth",
-    ]
-    cols = st.columns(5)
-    for i, s in enumerate(suggestions):
-        if cols[i % 5].button(s, key=f"sg{i}", use_container_width=True):
-            with st.spinner(f"Loading {s}..."):
-                r = get_movie_data(s)
-            if r:
-                if s not in st.session_state.history:
-                    st.session_state.history.append(s)
-                show_result(r, f"sg_{i}")
-
-# ══════════════════════════════════════════════════════════════════════
-# COMPARE
-# ══════════════════════════════════════════════════════════════════════
-elif st.session_state.page == "Compare":
-
-    st.markdown("<div class='page-header'>Compare Movies</div>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Search two movies and compare their sentiment scores side by side</div>", unsafe_allow_html=True)
-
-    col_a, col_vs, col_b = st.columns([2, 0.3, 2])
-    with col_a:
-        m1q = st.text_input("", placeholder="First movie...",
-                            label_visibility="collapsed", key="m1q")
-    with col_vs:
-        st.markdown("<div style='text-align:center;padding-top:8px;font-size:18px;color:#9ca3af;font-weight:700;'>VS</div>", unsafe_allow_html=True)
-    with col_b:
-        m2q = st.text_input("", placeholder="Second movie...",
-                            label_visibility="collapsed", key="m2q")
-
-    if st.button("Compare Now", use_container_width=True, key="cmp"):
-        if m1q and m2q:
-            with st.spinner("Fetching both movies..."):
-                m1 = get_movie_data(m1q)
-                m2 = get_movie_data(m2q)
-
-            if m1 and m2:
-                winner = m1 if m1["score"] >= m2["score"] else m2
-                st.markdown(f"""
-                <div class='winner-banner'>
-                    <div style='font-size:11px;color:rgba(255,255,255,0.7);
-                                text-transform:uppercase;letter-spacing:0.15em;
-                                margin-bottom:4px;'>Winner</div>
-                    <div style='font-family:"Playfair Display",serif;
-                                font-size:1.5rem;font-weight:700;'>
-                        🏆 {winner['title']} — {winner['score']}%
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                c1, c2 = st.columns(2)
-                for col, m in [(c1, m1), (c2, m2)]:
-                    b_cls, b_txt = badge_html(m["score"])
-                    neg          = 100 - m["score"]
-                    sc           = score_color(m["score"])
-                    is_win       = m["title"] == winner["title"]
-                    card_cls     = "compare-card-winner" if is_win else "compare-card"
-
-                    with col:
-                        if m["poster"] and m["poster"] != "N/A":
-                            st.image(m["poster"], width=180)
-                        st.markdown(f"""
-                        <div class='{card_cls}' style='margin-top:8px;'>
-                            {"<div style='font-size:10px;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:6px;'>✓ Higher Score</div>" if is_win else ""}
-                            <div style='font-family:"Playfair Display",serif;
-                                        font-size:1.2rem;color:#1f2937;
-                                        font-weight:700;margin-bottom:4px;'>
-                                {m['title']}
-                            </div>
-                            <div style='font-size:10px;color:#9ca3af;
-                                        text-transform:uppercase;margin-bottom:12px;'>
-                                {m['genre']} · {m['year']} · {m['country']}
-                            </div>
-                            <div style='font-size:2.5rem;font-weight:700;
-                                        color:{sc};font-family:"Playfair Display",serif;
-                                        margin-bottom:4px;'>
-                                {m['score']}%
-                            </div>
-                            <span class='{b_cls}'>{b_txt}</span>
-                            <div class='progress-wrap' style='margin-top:12px;'>
-                                <div class='{bar_cls(m["score"])}'
-                                     style='width:{m["score"]}%;'></div>
-                            </div>
-                            <div style='margin-top:12px;font-size:11px;color:#9ca3af;'>
-                                IMDB: {m['imdb']} · {m['runtime']}<br>
-                                Dir: {m['director']}
-                            </div>
-                            <div style='margin-top:10px;font-size:12px;
-                                        color:#6b7280;line-height:1.5;'>
-                                {m['plot'][:150]}...
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        if st.button(f"+ Watchlist",
-                                     key=f"cw_{m['title']}_{m['year']}",
-                                     use_container_width=True):
-                            if m["title"] not in [w["title"] for w in st.session_state.watchlist]:
-                                st.session_state.watchlist.append({
-                                    "title":     m["title"],
-                                    "status":    "Want to Watch",
-                                    "sentiment": f"{m['score']}%"
-                                })
-                                st.success(f"Added '{m['title']}'!")
-            else:
-                st.error("Could not find one or both movies.")
-
-    st.markdown("<div class='section-title'>Popular Comparisons</div>",
-                unsafe_allow_html=True)
-    comparisons = [
-        ("Inception",    "Interstellar"),
-        ("Parasite",     "Oldboy"),
-        ("RRR",          "Baahubali 2"),
-        ("3 Idiots",     "Dangal"),
-        ("Spirited Away","Your Name"),
-        ("Amelie",       "Intouchables"),
-    ]
-    cols = st.columns(3)
-    for i, (a, b) in enumerate(comparisons):
-        if cols[i % 3].button(f"{a} vs {b}", key=f"qc{i}",
-                              use_container_width=True):
-            with st.spinner("Comparing..."):
-                m1 = get_movie_data(a)
-                m2 = get_movie_data(b)
-            if m1 and m2:
-                winner = m1 if m1["score"] >= m2["score"] else m2
-                st.markdown(f"""
-                <div class='winner-banner'>
-                    <div style='font-size:11px;color:rgba(255,255,255,0.7);
-                                text-transform:uppercase;margin-bottom:4px;'>
-                        Winner
-                    </div>
-                    <div style='font-family:"Playfair Display",serif;
-                                font-size:1.4rem;font-weight:700;'>
-                        🏆 {winner['title']} — {winner['score']}%
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                c1, c2 = st.columns(2)
-                for col, m in [(c1, m1), (c2, m2)]:
-                    sc = score_color(m["score"])
-                    b_cls, b_txt = badge_html(m["score"])
-                    with col:
-                        st.markdown(f"""
-                        <div class='glass-card'>
-                            <div style='font-family:"Playfair Display",serif;
-                                        font-size:1.1rem;color:#1f2937;
-                                        font-weight:700;margin-bottom:4px;'>
-                                {m['title']}
-                            </div>
-                            <div style='font-size:1.8rem;font-weight:700;color:{sc};
-                                        font-family:"Playfair Display",serif;'>
-                                {m['score']}%
-                            </div>
-                            <span class='{b_cls}'>{b_txt}</span>
-                            <div class='progress-wrap' style='margin-top:8px;'>
-                                <div class='{bar_cls(m["score"])}'
-                                     style='width:{m["score"]}%;'></div>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════════════════════════════
-# SENTIMENT
-# ══════════════════════════════════════════════════════════════════════
-elif st.session_state.page == "Sentiment":
-
-    st.markdown("<div class='page-header'>Analyze a Review</div>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Paste any movie review — DistilBERT classifies it as positive or negative</div>", unsafe_allow_html=True)
-
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown("<div class='stat-card'><div class='stat-val'>86.4%</div><div class='stat-lbl'>Accuracy</div></div>", unsafe_allow_html=True)
-    with c2: st.markdown("<div class='stat-card'><div class='stat-val'>0.86</div><div class='stat-lbl'>F1 Score</div></div>", unsafe_allow_html=True)
-    with c3: st.markdown(f"<div class='stat-card'><div class='stat-val'>{len(st.session_state.analyzed)}</div><div class='stat-lbl'>Reviews Done</div></div>", unsafe_allow_html=True)
-    with c4: st.markdown("<div class='stat-card'><div class='stat-val'>66M</div><div class='stat-lbl'>Parameters</div></div>", unsafe_allow_html=True)
-
-    col_l, col_r = st.columns([1.3, 1])
-    with col_l:
-        mname  = st.text_input("", placeholder="Movie title (optional)...",
-                               label_visibility="collapsed", key="mn")
-        review = st.text_area("", placeholder="Paste any movie review here...",
-                              height=160, label_visibility="collapsed", key="rv")
-        ca, cw = st.columns(2)
-        with ca:
-            go = st.button("Analyze", use_container_width=True)
-        with cw:
-            if st.button("+ Watchlist", use_container_width=True) and mname:
-                if mname not in [w["title"] for w in st.session_state.watchlist]:
-                    st.session_state.watchlist.append({
-                        "title": mname,"status":"Want to Watch","sentiment":"—"
-                    })
-                    st.success(f"Added '{mname}'!")
-
-        st.markdown("<div style='margin-top:1rem;font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;'>Samples</div>", unsafe_allow_html=True)
-        samples = [
-            "This movie was absolutely brilliant!",
-            "Terrible film. Complete waste of time.",
-            "A masterpiece of modern cinema.",
-            "The plot made no sense whatsoever.",
-            "Stunning visuals but weak story.",
-            "One of the best I have ever seen!",
-        ]
-        r1 = st.columns(3)
-        for i, s in enumerate(samples[:3]):
-            if r1[i].button(s[:18]+"...", key=f"sa{i}"):
-                st.session_state["picked"] = s
-        r2 = st.columns(3)
-        for i, s in enumerate(samples[3:]):
-            if r2[i].button(s[:18]+"...", key=f"sb{i}"):
-                st.session_state["picked"] = s
-        if "picked" in st.session_state:
-            review = st.session_state["picked"]
-
-    with col_r:
-        if go and review.strip():
-            with st.spinner("Analyzing..."):
-                res   = classifier(review[:512])[0]
-                label = "POSITIVE" if res["label"] == "LABEL_1" else "NEGATIVE"
-                conf  = round(res["score"] * 100, 2)
-            st.session_state.analyzed.append({
-                "review": review[:60],"label": label,
-                "confidence": conf,"movie": mname or "Unknown"
-            })
-            if label == "POSITIVE":
-                st.markdown(f"""
-                <div class='result-pos'>
-                    <div style='font-size:44px;margin-bottom:8px;'>🎬</div>
-                    <div style='font-size:28px;font-weight:700;color:#065f46;
-                                letter-spacing:3px;margin-bottom:6px;'>POSITIVE</div>
-                    <div style='color:#6ee7b7;font-size:12px;margin-bottom:20px;'>
-                        Positive sentiment detected
-                    </div>
-                    <div style='background:rgba(0,0,0,0.06);border-radius:50px;
-                                height:8px;overflow:hidden;margin:0 auto 12px;
-                                max-width:300px;'>
-                        <div style='width:{conf}%;height:100%;
-                                    background:linear-gradient(90deg,#34d399,#10b981);
-                                    border-radius:50px;'></div>
-                    </div>
-                    <div style='font-size:2.5rem;font-weight:700;color:#065f46;
-                                font-family:"Playfair Display",serif;'>{conf}%</div>
-                    <div style='font-size:11px;color:#6ee7b7;margin-top:4px;'>
-                        confidence
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class='result-neg'>
-                    <div style='font-size:44px;margin-bottom:8px;'>🎭</div>
-                    <div style='font-size:28px;font-weight:700;color:#991b1b;
-                                letter-spacing:3px;margin-bottom:6px;'>NEGATIVE</div>
-                    <div style='color:#fca5a5;font-size:12px;margin-bottom:20px;'>
-                        Negative sentiment detected
-                    </div>
-                    <div style='background:rgba(0,0,0,0.06);border-radius:50px;
-                                height:8px;overflow:hidden;margin:0 auto 12px;
-                                max-width:300px;'>
-                        <div style='width:{conf}%;height:100%;
-                                    background:linear-gradient(90deg,#f87171,#ef4444);
-                                    border-radius:50px;'></div>
-                    </div>
-                    <div style='font-size:2.5rem;font-weight:700;color:#991b1b;
-                                font-family:"Playfair Display",serif;'>{conf}%</div>
-                    <div style='font-size:11px;color:#fca5a5;margin-top:4px;'>
-                        confidence
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div style='background:rgba(255,255,255,0.6);
-                        backdrop-filter:blur(20px);
-                        border:1px dashed rgba(99,102,241,0.2);
-                        border-radius:20px;padding:3rem;text-align:center;'>
-                <div style='font-size:44px;margin-bottom:12px;'>🎬</div>
-                <div style='color:#9ca3af;font-size:13px;'>
-                    Enter a review and click Analyze
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-    if st.session_state.analyzed:
-        st.markdown("<div class='section-title'>Recent Analysis</div>",
-                    unsafe_allow_html=True)
-        for item in reversed(st.session_state.analyzed[-3:]):
-            lc   = "#10b981" if item["label"] == "POSITIVE" else "#ef4444"
-            bcls = "badge-pos" if item["label"] == "POSITIVE" else "badge-neg"
-            st.markdown(f"""
-            <div class='glass-card'>
-                <div style='display:flex;justify-content:space-between;
-                            align-items:center;'>
-                    <div>
-                        <div style='font-size:12px;color:#9ca3af;
-                                    margin-bottom:3px;'>{item['movie']}</div>
-                        <div style='font-size:13px;color:#374151;'>
-                            "{item['review']}..."
-                        </div>
-                    </div>
-                    <div style='text-align:right;margin-left:1rem;flex-shrink:0;'>
-                        <span class='{bcls}'>{item['label']}</span>
-                        <div style='font-size:1.3rem;font-weight:700;
-                                    color:{lc};margin-top:4px;'>
-                            {item['confidence']}%
-                        </div>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════════════════════════════
-# WATCHLIST
-# ══════════════════════════════════════════════════════════════════════
-elif st.session_state.page == "Watchlist":
-
-    st.markdown("<div class='page-header'>My Watchlist</div>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='page-sub'>Track and manage your personal film collection</div>", unsafe_allow_html=True)
-
-    ca, cb, cc = st.columns([2.5, 1.5, 1])
-    with ca:
-        nf = st.text_input("", placeholder="Add any movie...",
-                           label_visibility="collapsed", key="nf")
-    with cb:
-        ns = st.selectbox("",["Want to Watch","Watching","Watched"],
-                          label_visibility="collapsed", key="ns")
-    with cc:
-        if st.button("Add Film", use_container_width=True):
-            if nf:
-                if nf not in [w["title"] for w in st.session_state.watchlist]:
-                    st.session_state.watchlist.append({
-                        "title": nf,"status": ns,"sentiment": "—"
-                    })
-                    st.success(f"Added '{nf}'!")
-                else:
-                    st.warning("Already in watchlist!")
-
-    if st.session_state.watchlist:
-        want  = sum(1 for w in st.session_state.watchlist if w["status"]=="Want to Watch")
-        watch = sum(1 for w in st.session_state.watchlist if w["status"]=="Watching")
-        done  = sum(1 for w in st.session_state.watchlist if w["status"]=="Watched")
-
-        c1, c2, c3 = st.columns(3)
-        with c1: st.markdown(f"<div class='stat-card'><div class='stat-val'>{want}</div><div class='stat-lbl'>Want to Watch</div></div>", unsafe_allow_html=True)
-        with c2: st.markdown(f"<div class='stat-card'><div class='stat-val'>{watch}</div><div class='stat-lbl'>Watching</div></div>", unsafe_allow_html=True)
-        with c3: st.markdown(f"<div class='stat-card'><div class='stat-val'>{done}</div><div class='stat-lbl'>Watched</div></div>", unsafe_allow_html=True)
-
-        # Export CSV
-        output = io.StringIO()
-        writer = csv.DictWriter(output, fieldnames=["title","status","sentiment"])
-        writer.writeheader()
-        writer.writerows(st.session_state.watchlist)
-        st.download_button(
-            "📥 Export Watchlist as CSV",
-            data=output.getvalue(),
-            file_name="cinelytix_watchlist.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-        st.markdown("<div class='section-title'>My Films</div>",
-                    unsafe_allow_html=True)
-        for i, film in enumerate(st.session_state.watchlist):
-            sc = {"Watched":"#10b981","Watching":"#f59e0b",
-                  "Want to Watch":"#6366f1"}.get(film["status"],"#9ca3af")
-            c1, c2, c3, c4 = st.columns([3, 1.5, 1.5, 0.5])
-            with c1:
-                st.markdown(f"""
-                <div style='padding:10px 0;'>
-                    <div style='font-size:14px;font-weight:600;color:#1f2937;
-                                font-family:"Playfair Display",serif;'>
-                        {film['title']}
-                    </div>
-                    <div style='font-size:11px;color:#9ca3af;margin-top:2px;'>
-                        Score: {film['sentiment']}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            with c2:
-                st.markdown(f"""
-                <div style='padding:10px 0;'>
-                    <span style='background:rgba(99,102,241,0.08);
-                                 border:1px solid {sc}44;color:{sc};
-                                 font-size:11px;padding:4px 10px;
-                                 border-radius:20px;'>
-                        {film['status']}
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
-            with c3:
-                upd = st.selectbox(
-                    "",["Want to Watch","Watching","Watched"],
-                    index=["Want to Watch","Watching","Watched"].index(film["status"]),
-                    key=f"upd{i}", label_visibility="collapsed"
-                )
-                if upd != film["status"]:
-                    st.session_state.watchlist[i]["status"] = upd
-                    st.rerun()
-            with c4:
-                if st.button("✕", key=f"del{i}"):
-                    st.session_state.watchlist.pop(i)
-                    st.rerun()
-            st.markdown("<hr style='border-color:rgba(0,0,0,0.06);margin:2px 0;'>",
-                        unsafe_allow_html=True)
-    else:
-        st.markdown("""
-        <div style='background:rgba(255,255,255,0.6);
-                    backdrop-filter:blur(20px);
-                    border:1px dashed rgba(99,102,241,0.2);
-                    border-radius:16px;padding:3rem;text-align:center;'>
-            <div style='font-size:40px;margin-bottom:12px;'>⭐</div>
-            <div style='color:#9ca3af;font-size:13px;'>
-                Your watchlist is empty.<br>
-                Search any movie and add it here.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-# ── Footer ─────────────────────────────────────────────────────────────
-st.markdown("""
-<div class='footer'>
-    © 2026 Samantha Jessica Monis · All rights reserved<br>
-    Cinelytix · AI Movie Sentiment Intelligence ·
-    Built with DistilBERT · Fine-tuned on IMDB · 86.4% Accuracy<br>
-    <a href='https://huggingface.co/Samantha-16/movie-sentiment-distilbert'
-       style='color:#d1d5db;text-decoration:none;'>
-        Model: Samantha-16/movie-sentiment-distilbert
-    </a>
-</div>
-""", unsafe_allow_html=True)
+            <span class='hero-badge'>DistilBERT AI</span>
+            <span class='hero-badge'>IMDB + Rotten Tomatoes</span>
+            <span class='hero-badge'>Any Movie · Any Country</span>
+            <span class='hero-badge'>86.4% Accuracy</span>
+            <span class='hero-badge'>© Samantha Jessica Monis 2026
