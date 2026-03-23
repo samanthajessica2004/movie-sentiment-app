@@ -755,7 +755,7 @@ for i, title in enumerate(movies_to_show):
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
-elif st.session_state.page == "Search":
+ elif st.session_state.page == "Search":
 
     st.markdown("<div class='page-header'>Search Any Movie</div>",
                 unsafe_allow_html=True)
