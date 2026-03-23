@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-OMDB_KEY = "YOUR_KEY_HERE"
+OMDB_KEY = "c1c0e742"
 
 st.markdown("""
 <style>
