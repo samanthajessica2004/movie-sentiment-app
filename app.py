@@ -1198,7 +1198,7 @@ st.markdown("""
     Cinelytix · AI Movie Sentiment Intelligence ·
     Built with DistilBERT · Fine-tuned on IMDB · 86.4% Accuracy<br>
     <a href='https://huggingface.co/Samantha-16/movie-sentiment-distilbert'
-       style='color:#03080f;text-decoration:none;'>
+       style='color:#d1d5db;text-decoration:none;'>
         Model: Samantha-16/movie-sentiment-distilbert
     </a>
 </div>
