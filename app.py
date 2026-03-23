@@ -772,7 +772,7 @@ for i, t in enumerate(popular):
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
-elif st.session_state.page == "Search":
+if st.session_state.page == "Search":
 
     st.markdown("<div class='page-header'>Search Any Movie</div>",
                 unsafe_allow_html=True)
