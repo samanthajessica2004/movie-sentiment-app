@@ -691,6 +691,55 @@ if st.session_state.page == "Home":
                 st.session_state.history.append(daily_title)
             st.rerun()
 
+# Movie of the Day
+import datetime
+import hashlib
+
+def get_daily_movie():
+    daily_picks = [
+        "Inception", "Parasite", "RRR", "Spirited Away",
+        "3 Idiots", "City of God", "Amelie", "Oldboy",
+        "Dangal", "Life Is Beautiful", "Intouchables",
+        "A Separation", "Train to Busan", "Your Name",
+        "Pan's Labyrinth", "Jai Bhim", "Interstellar", "Tumbbad"
+    ]
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    idx   = int(hashlib.md5(today.encode()).hexdigest(), 16) % len(daily_picks)
+    return daily_picks[idx]
+
+daily_title = get_daily_movie()
+
+st.markdown("<div class='section-title'>🎬 Movie of the Day</div>",
+            unsafe_allow_html=True)
+
+col_d1, col_d2 = st.columns([3, 1])
+with col_d1:
+    st.markdown(f"""
+    <div style='background:linear-gradient(135deg,#0d0d1f,#12103a);
+                border:1px solid #7c3aed;border-radius:16px;
+                padding:1.25rem 1.5rem;'>
+        <div style='font-size:10px;color:#3a3a5a;text-transform:uppercase;
+                    letter-spacing:0.15em;margin-bottom:6px;'>
+            Today · {datetime.date.today().strftime("%B %d, %Y")}
+        </div>
+        <div style='font-family:"Playfair Display",serif;font-size:1.4rem;
+                    color:#e8e4f0;font-weight:700;margin-bottom:4px;'>
+            {daily_title}
+        </div>
+        <div style='font-size:12px;color:#6060a0;'>
+            Click to analyze today's featured film
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+with col_d2:
+    if st.button("Analyze Today's Film",
+                 use_container_width=True, key="daily_btn"):
+        with st.spinner(f"Loading {daily_title}..."):
+            r = get_movie_data(daily_title)
+        st.session_state.search_data = r
+        st.rerun()    
+    
+
     # Search bar
     st.markdown("<div class='section-title'>Search Any Movie</div>", unsafe_allow_html=True)
     col_s, col_b = st.columns([4, 1])
