@@ -719,14 +719,7 @@ GENRE_MAP = {
     "Thriller": "thriller"
 }
 
-st.title("🎬 Movie Sentiment Analyzer")
-
-# your search bar (keep it as is)
-query = st.text_input("Search movie")
-
-# ✅ ADD THIS BELOW SEARCH BAR
 st.subheader("🎭 Browse by Genre")
-
 cols = st.columns(len(GENRE_MAP))
 
 for i, genre in enumerate(GENRE_MAP.keys()):
