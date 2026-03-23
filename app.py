@@ -750,19 +750,19 @@ if "selected_genre" in st.session_state:
     else:
         st.warning("No movies found.")
 
-    # Popular around the world
-    st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
-    st.markdown("<div class='section-sub'>Click any film to get its sentiment score instantly</div>", unsafe_allow_html=True)
+# Popular around the world
+st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
+st.markdown("<div class='section-sub'>Click any film to get its sentiment score instantly</div>", unsafe_allow_html=True)
 
-    popular = [
+popular = [
         "RRR",       "Parasite",    "Spirited Away",  "Amelie",
         "3 Idiots",  "City of God", "Inception",      "Dangal",
         "Oldboy",    "Intouchables","A Separation",   "Life Is Beautiful",
     ]
-    cols = st.columns(4)
-    for i, t in enumerate(popular):
-        if cols[i % 4].button(t, key=f"p{i}", use_container_width=True):
-            with st.spinner(f"Loading {t}..."):
+cols = st.columns(4)
+for i, t in enumerate(popular):
+    if cols[i % 4].button(t, key=f"p{i}", use_container_width=True):
+         with st.spinner(f"Loading {t}..."):
                 r = get_movie_data(t)
             st.session_state.search_data = r
             if t not in st.session_state.history:
