@@ -741,6 +741,13 @@ GENRE_MAP = {
     "Drama": "drama film india",
     "Thriller": "thriller movie bollywood"
 }
+BOLLYWOOD_MOVIES = {
+    "Action": ["Pathaan", "War", "KGF", "Baaghi"],
+    "Comedy": ["3 Idiots", "Hera Pheri", "Golmaal", "Chup Chup Ke"],
+    "Drama": ["Dangal", "Taare Zameen Par", "Article 15"],
+    "Romance": ["Dilwale Dulhania Le Jayenge", "Kabir Singh", "Jab We Met"],
+    "Thriller": ["Andhadhun", "Drishyam", "Kahaani"]
+}
 st.subheader("🎭 Browse by Genre")
 cols = st.columns(len(GENRE_MAP))
 
@@ -751,40 +758,22 @@ for i, genre in enumerate(GENRE_MAP.keys()):
    
 
     # ✅ ADD THIS BELOW BUTTONS
-selected_genre = st.session_state.get("selected_genre")
+movies = []
 
-if selected_genre:
-    st.write(f"### {selected_genre} Movies")
+# Hollywood (your existing dataset)
+if selected_genre in GENRE_MOVIES:
+    movies.extend(GENRE_MOVIES[selected_genre])
 
-    movies = []
+# Bollywood
+if selected_genre in BOLLYWOOD_MOVIES:
+    movies.extend(BOLLYWOOD_MOVIES[selected_genre])
 
-    # 🔹 Add Bollywood movies
-    if selected_genre in BOLLYWOOD_MOVIES:
-        movies.extend(BOLLYWOOD_MOVIES[selected_genre])
 
-    # 🔹 Add OMDb results
-    url = f"https://www.omdbapi.com/?s={GENRE_MAP[selected_genre]}&apikey={OMDB_KEY}"
-    response = requests.get(url)
-    data = response.json()
+cols = st.columns(5)
 
-    if data.get("Search"):
-        movies.extend([m["Title"] for m in data["Search"]])
-
-    # 🔹 Remove duplicates
-    movies = list(set(movies))
-
-    # 🔹 Display horizontally
-    cols = st.columns(5)
-
-    for i, title in enumerate(movies[:10]):
-        movie_data = fetch_movie(title)
-
-        if movie_data:
-            with cols[i % 5]:
-                poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
-                st.image(poster, use_container_width=True)
-                st.caption(movie_data["Title"])
-   
+for i, movie in enumerate(movies[:10]):
+    with cols[i % 5]:
+        st.write(movie)
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
