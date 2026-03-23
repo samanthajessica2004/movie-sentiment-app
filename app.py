@@ -761,16 +761,15 @@ if "selected_genre" in st.session_state:
     response = requests.get(url)
     data = response.json()
 
-    if data.get("Search"):
-        for movie in data["Search"]:
-            col1, col2 = st.columns([1, 3])
+   movies = data["Search"]
 
-            with col1:
-                st.image(movie["Poster"], width=100)
+cols = st.columns(5)  # number of movies per row
 
-            with col2:
-                st.write(f"**{movie['Title']} ({movie['Year']})**")
-    else:
+for i, movie in enumerate(movies):
+    with cols[i % 5]:
+        st.image(movie["Poster"], use_container_width=True)
+        st.caption(f"{movie['Title']} ({movie['Year']})")
+else:
         st.warning("No movies found.")
 
 # ══════════════════════════════════════════════════════════════════════
