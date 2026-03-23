@@ -592,7 +592,7 @@ def show_result(m, key_suffix=""):
 
 # Share button
 share_text = (
-    f"🎬 {m['title']} scores {m['score']}% positive sentiment "
+    f"🎬{m['title']} scores {m['score']}% positive sentiment "
     f"on Cinelytix AI · cinelytix.streamlit.app"
 )
 st.code(share_text, language=None)
