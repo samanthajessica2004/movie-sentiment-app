@@ -730,23 +730,7 @@ for i, t in enumerate(popular):
                 st.session_state.history.append(t)
          st.rerun()
 
-# 🔹 Genre → search mapping
-GENRE_MAP = {
-    "Action": "action",
-    "Comedy": "comedy",
-    "Drama": "drama",
-    "Romance": "romance",
-    "Thriller": "thriller"
-}
 
-# 🔹 Bollywood movies
-BOLLYWOOD_MOVIES = {
-    "Action": ["Pathaan", "War", "KGF", "Baaghi"],
-    "Comedy": ["3 Idiots", "Hera Pheri", "Golmaal", "Chup Chup Ke"],
-    "Drama": ["Dangal", "Taare Zameen Par", "Article 15"],
-    "Romance": ["Dilwale Dulhania Le Jayenge", "Kabir Singh", "Jab We Met"],
-    "Thriller": ["Andhadhun", "Drishyam", "Kahaani"]
-}
 
 # 🔹 Fetch movie details (poster etc.)
 def fetch_movie(title):
