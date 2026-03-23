@@ -590,6 +590,14 @@ def show_result(m, key_suffix=""):
                      f"on Cinelytix · cinelytix.streamlit.app")
             st.code(share, language=None)
 
+# Share button
+share_text = (
+    f"🎬 {m['title']} scores {m['score']}% positive sentiment "
+    f"on Cinelytix AI · cinelytix.streamlit.app"
+)
+st.code(share_text, language=None)
+st.caption("Copy the text above to share this result!")
+
 # ── Sidebar ────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("<span class='nav-logo'>Cinelytix</span>",
