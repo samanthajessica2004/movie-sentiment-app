@@ -733,20 +733,7 @@ for i, genre in enumerate(GENRE_MAP.keys()):
     if cols[i].button(genre):
         st.session_state["selected_genre"] = GENRE_MAP[genre]
 
-    # Genre pills
-    st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div>
-        <span class='genre-pill genre-pill-active'>🔥 Trending</span>
-        <span class='genre-pill'>💥 Action</span>
-        <span class='genre-pill'>❤️ Romance</span>
-        <span class='genre-pill'>🎭 Drama</span>
-        <span class='genre-pill'>😂 Comedy</span>
-        <span class='genre-pill'>👻 Horror</span>
-        <span class='genre-pill'>🚀 Sci-Fi</span>
-        <span class='genre-pill'>🎌 Animation</span>
-    </div>
-    """, unsafe_allow_html=True)
+   
 
     # ✅ ADD THIS BELOW BUTTONS
 if "selected_genre" in st.session_state:
