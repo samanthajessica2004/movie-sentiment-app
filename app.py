@@ -761,10 +761,9 @@ if "selected_genre" in st.session_state:
     response = requests.get(url)
     data = response.json()
 
-   movies = data["Search"]
+movies = data["Search"]
 
 cols = st.columns(5)  # number of movies per row
-
 for i, movie in enumerate(movies):
     with cols[i % 5]:
         st.image(movie["Poster"], use_container_width=True)
