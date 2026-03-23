@@ -733,15 +733,14 @@ for i, t in enumerate(popular):
 
 # ✅ SELECT BY GENRE
 GENRE_MAP = {
-    "Action": "action",
-    "Comedy": "comedy",
-    "Horror": "horror",
-    "Romance": "romance",
-    "Sci-Fi": "science fiction",
-    "Drama": "drama",
-    "Thriller": "thriller"
+    "Action": "action movie india",
+    "Comedy": "comedy film hindi",
+    "Horror": "horror movie india",
+    "Romance": "romantic movie bollywood",
+    "Sci-Fi": "science fiction movie",
+    "Drama": "drama film india",
+    "Thriller": "thriller movie bollywood"
 }
-
 st.subheader("🎭 Browse by Genre")
 cols = st.columns(len(GENRE_MAP))
 
@@ -752,22 +751,39 @@ for i, genre in enumerate(GENRE_MAP.keys()):
    
 
     # ✅ ADD THIS BELOW BUTTONS
-if "selected_genre" in st.session_state:
-    genre_query = st.session_state["selected_genre"]
+selected_genre = st.session_state.get("selected_genre")
 
-    st.write(f"### Results for: {genre_query}")
+if selected_genre:
+    st.write(f"### {selected_genre} Movies")
 
-    url = f"https://www.omdbapi.com/?s={genre_query}&apikey={OMDB_KEY}"
+    movies = []
+
+    # 🔹 Add Bollywood movies
+    if selected_genre in BOLLYWOOD_MOVIES:
+        movies.extend(BOLLYWOOD_MOVIES[selected_genre])
+
+    # 🔹 Add OMDb results
+    url = f"https://www.omdbapi.com/?s={GENRE_MAP[selected_genre]}&apikey={OMDB_KEY}"
     response = requests.get(url)
     data = response.json()
 
-movies = data["Search"]
+    if data.get("Search"):
+        movies.extend([m["Title"] for m in data["Search"]])
 
-cols = st.columns(5)  # number of movies per row
-for i, movie in enumerate(movies):
-    with cols[i % 5]:
-        st.image(movie["Poster"], use_container_width=True)
-        st.caption(f"{movie['Title']} ({movie['Year']})")
+    # 🔹 Remove duplicates
+    movies = list(set(movies))
+
+    # 🔹 Display horizontally
+    cols = st.columns(5)
+
+    for i, title in enumerate(movies[:10]):
+        movie_data = fetch_movie(title)
+
+        if movie_data:
+            with cols[i % 5]:
+                poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
+                st.image(poster, use_container_width=True)
+                st.caption(movie_data["Title"])
    
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
