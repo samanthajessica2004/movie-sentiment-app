@@ -761,7 +761,7 @@ if "selected_genre" in st.session_state:
     response = requests.get(url)
     data = response.json()
 
-     if data.get("Search"):
+    if data.get("Search"):
         for movie in data["Search"]:
             col1, col2 = st.columns([1, 3])
 
