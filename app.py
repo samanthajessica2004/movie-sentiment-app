@@ -730,17 +730,16 @@ for i, t in enumerate(popular):
                 st.session_state.history.append(t)
          st.rerun()
 
-
-# ✅ SELECT BY GENRE
+# 🔹 Genre → search mapping
 GENRE_MAP = {
-    "Action": "action movie india",
-    "Comedy": "comedy film hindi",
-    "Horror": "horror movie india",
-    "Romance": "romantic movie bollywood",
-    "Sci-Fi": "science fiction movie",
-    "Drama": "drama film india",
-    "Thriller": "thriller movie bollywood"
+    "Action": "action",
+    "Comedy": "comedy",
+    "Drama": "drama",
+    "Romance": "romance",
+    "Thriller": "thriller"
 }
+
+# 🔹 Bollywood movies
 BOLLYWOOD_MOVIES = {
     "Action": ["Pathaan", "War", "KGF", "Baaghi"],
     "Comedy": ["3 Idiots", "Hera Pheri", "Golmaal", "Chup Chup Ke"],
@@ -748,13 +747,28 @@ BOLLYWOOD_MOVIES = {
     "Romance": ["Dilwale Dulhania Le Jayenge", "Kabir Singh", "Jab We Met"],
     "Thriller": ["Andhadhun", "Drishyam", "Kahaani"]
 }
-st.subheader("🎭 Browse by Genre")
-cols = st.columns(len(GENRE_MAP))
+
+# 🔹 Fetch movie details (poster etc.)
+def fetch_movie(title):
+    try:
+        url = f"https://www.omdbapi.com/?t={title}&apikey={OMDB_KEY}"
+        res = requests.get(url).json()
+
+        if res.get("Response") == "True":
+            return res
+    except:
+        pass
+    return None
+
+
+# =========================
+# 🎬 GENRE SECTION
+# =========================
 
 selected_genre = st.session_state.get("selected_genre")
 
 if selected_genre:
-    st.write(f"### {selected_genre} Movies")
+    st.write(f"### 🎬 {selected_genre} Movies")
 
     movies = []
 
@@ -762,28 +776,42 @@ if selected_genre:
     if selected_genre in BOLLYWOOD_MOVIES:
         movies.extend(BOLLYWOOD_MOVIES[selected_genre])
 
-    # 🔹 Add OMDb results
-    url = f"https://www.omdbapi.com/?s={GENRE_MAP[selected_genre]}&apikey={OMDB_KEY}"
-    response = requests.get(url)
-    data = response.json()
+    # 🔹 Add OMDb movies
+    search_term = GENRE_MAP.get(selected_genre, selected_genre)
 
-    if data.get("Search"):
-        movies.extend([m["Title"] for m in data["Search"]])
+    try:
+        url = f"https://www.omdbapi.com/?s={search_term}&apikey={OMDB_KEY}"
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("Search"):
+            movies.extend([m["Title"] for m in data["Search"]])
+    except:
+        st.warning("⚠️ Could not fetch movies from OMDb")
 
     # 🔹 Remove duplicates
     movies = list(set(movies))
 
-    # 🔹 Display horizontally
-    cols = st.columns(5)
+    # 🔹 Show message if empty
+    if not movies:
+        st.info("No movies found for this genre")
+    else:
+        # 🔹 Display in horizontal rows (5 per row)
+        for i in range(0, len(movies[:10]), 5):
+            cols = st.columns(5)
 
-    for i, title in enumerate(movies[:10]):
-        movie_data = fetch_movie(title)
+            for j in range(5):
+                if i + j < len(movies[:10]):
+                    title = movies[i + j]
+                    movie_data = fetch_movie(title)
 
-        if movie_data:
-            with cols[i % 5]:
-                poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
-                st.image(poster, use_container_width=True)
-                st.caption(movie_data["Title"])
+                    with cols[j]:
+                        if movie_data:
+                            poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
+                            st.image(poster, use_container_width=True)
+                            st.caption(movie_data["Title"])
+                        else:
+                            st.write(title)
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
