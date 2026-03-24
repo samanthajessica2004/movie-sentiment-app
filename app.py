@@ -730,7 +730,23 @@ for i, t in enumerate(popular):
                 st.session_state.history.append(t)
          st.rerun()
 
+# 🔹 Genre → search mapping
+GENRE_MAP = {
+    "Action": "action",
+    "Comedy": "comedy",
+    "Drama": "drama",
+    "Romance": "romance",
+    "Thriller": "thriller"
+}
 
+# 🔹 Bollywood movies
+BOLLYWOOD_MOVIES = {
+    "Action": ["Pathaan", "War", "KGF", "Baaghi"],
+    "Comedy": ["3 Idiots", "Hera Pheri", "Golmaal"],
+    "Drama": ["Dangal", "Taare Zameen Par"],
+    "Romance": ["DDLJ", "Kabir Singh", "Jab We Met"],
+    "Thriller": ["Andhadhun", "Drishyam"]
+}
 
 # 🔹 Fetch movie details (poster etc.)
 def fetch_movie(title):
@@ -745,6 +761,53 @@ def fetch_movie(title):
     return None
 
 
+# 🔹 Get selected genre
+selected_genre = st.session_state.get("selected_genre")
+
+if selected_genre:
+    st.write(f"### 🎬 {selected_genre} Movies")
+
+    movies = []
+
+    # ✅ Add Bollywood movies
+    if selected_genre in BOLLYWOOD_MOVIES:
+        movies.extend(BOLLYWOOD_MOVIES[selected_genre])
+
+    # ✅ Add OMDb movies
+    search_term = GENRE_MAP.get(selected_genre, selected_genre)
+
+    try:
+        url = f"https://www.omdbapi.com/?s={search_term}&apikey={OMDB_KEY}"
+        data = requests.get(url).json()
+
+        if data.get("Search"):
+            movies.extend([m["Title"] for m in data["Search"]])
+    except:
+        st.warning("Could not fetch movies")
+
+    # ✅ Remove duplicates
+    movies = list(set(movies))
+
+    # ✅ If no movies found
+    if not movies:
+        st.info("No movies found")
+    else:
+        # ✅ Horizontal layout (5 per row)
+        for i in range(0, min(len(movies), 10), 5):
+            cols = st.columns(5)
+
+            for j in range(5):
+                if i + j < len(movies):
+                    title = movies[i + j]
+                    movie_data = fetch_movie(title)
+
+                    with cols[j]:
+                        if movie_data:
+                            poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
+                            st.image(poster, use_container_width=True)
+                            st.caption(movie_data["Title"])
+                        else:
+                            st.write(title)
 
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
