@@ -658,6 +658,9 @@ with st.sidebar:
 # ══════════════════════════════════════════════════════════════════════
 # HOME
 # ══════════════════════════════════════════════════════════════════════
+
+
+   
 # 🔝 SHOW RESULT FIRST (acts like scroll-to-top)
 if st.session_state.get("search_data"):
     show_result(st.session_state.search_data, "home")
@@ -713,8 +716,9 @@ if st.session_state.page == "Home":
     with col_d2:
         if st.button("Analyze Today's Film", use_container_width=True, key="daily"):
             with st.spinner(f"Loading {daily_title}..."):
-                r = get_movie_data(daily_title)
-            st.session_state.search_data = r
+                corrected = smart_search(movie["title"])
+                r = get_movie_data(corrected)
+                st.session_state.search_data = r
             if daily_title not in st.session_state.history:
                 st.session_state.history.append(daily_title)
             st.rerun()
@@ -731,7 +735,8 @@ if st.session_state.page == "Home":
         if st.button("Search", use_container_width=True, key="home_btn"):
             if home_q.strip():
                 with st.spinner(f"Finding '{home_q}'..."):
-                    r = get_movie_data(home_q)
+                    corrected = smart_search(home_q)
+                    r = get_movie_data(corrected)
                 st.session_state.search_data = r
                 if home_q not in st.session_state.history:
                     st.session_state.history.append(home_q)
@@ -745,13 +750,14 @@ if st.session_state.page == "Home":
 
     
 # Popular around the world
-st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
-st.markdown("<div class='section-sub'>Click any film to get its sentiment score instantly</div>", unsafe_allow_html=True)
-movies = get_trending_movies()
+if st.session_state.page == "Home":
+  st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
+  st.markdown("<div class='section-sub'>Click any film to get its sentiment score instantly</div>", unsafe_allow_html=True)
+  movies = get_trending_movies()
 
-cols = st.columns(4)
+  cols = st.columns(4)
 
-for i, movie in enumerate(movies[:12]):
+  for i, movie in enumerate(movies[:12]):
     with cols[i % 4]:
         poster = f"https://image.tmdb.org/t/p/w500{movie['poster_path']}" if movie.get("poster_path") else None
         
@@ -843,17 +849,18 @@ if selected_genre:
 
             if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
 
-              movie_data = get_movie_data(movie["title"])
+               with st.spinner(f"Loading {movie['title']}..."):
+                movie_data = get_movie_data(movie["title"])
 
-            if movie_data:
-               st.session_state.search_data = movie_data
-               st.rerun()
-            else:
-                st.error("Movie data not found")
+               if movie_data:
+                st.session_state.search_data = movie_data
+                if movie["title"] not in st.session_state.history:
+                  st.session_state.history.append(movie["title"])
+                  st.rerun()
+               else:
+                  st.error("Movie data not found")    
 
-         if st.session_state.get("scroll_trigger"):
-               st.success("Showing results ↑")
-               st.session_state.scroll_trigger = False
+ elif st.session_state.page == "Search":           
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
