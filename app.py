@@ -767,6 +767,24 @@ for i, g in enumerate(GENRES):
         st.session_state.selected_genre = g
         st.rerun()
 
+BOLLYWOOD_MOVIES = {
+    "Action": [
+        "Pathaan", "War", "KGF Chapter 2", "Jawan", "RRR"
+    ],
+    "Comedy": [
+        "3 Idiots", "Hera Pheri", "Bhool Bhulaiyaa", "Chup Chup Ke", "Welcome"
+    ],
+    "Drama": [
+        "Dangal", "Taare Zameen Par", "Jai Bhim", "Swades", "Article 15"
+    ],
+    "Romance": [
+        "Dilwale Dulhania Le Jayenge", "Kabir Singh", "Ae Dil Hai Mushkil", "Veer-Zaara"
+    ],
+    "Thriller": [
+        "Andhadhun", "Drishyam", "Kahaani", "Talaash", "Badla"
+    ]
+}
+
 selected_genre = st.session_state.get("selected_genre")
 
 if selected_genre:
@@ -783,10 +801,11 @@ if selected_genre:
 
     # Add Bollywood as fake TMDb-style dict
     for b in bollywood:
-        all_movies.append({
-            "title": b,
-            "poster_path": None
-        })
+        search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&query={b}"
+        res = requests.get(search_url).json().get("results")
+
+        if res:
+          all_movies.append(res[0])
 
     # ✅ Horizontal layout
     cols = st.columns(5)
