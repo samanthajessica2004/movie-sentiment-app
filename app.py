@@ -745,7 +745,17 @@ for i, movie in enumerate(movies[:12]):
                 st.session_state.history.append(movie["title"])
             st.rerun()
 
-
+GENRE_MAP = {
+    "Action": 28,
+    "Comedy": 35,
+    "Drama": 18,
+    "Romance": 10749,
+    "Thriller": 53
+}
+def get_movies_by_genre(genre):
+    genre_id = GENRE_MAP.get(genre)
+    url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_KEY}&with_genres={genre_id}&sort_by=popularity.desc"
+    return requests.get(url).json().get("results", [])
 GENRES = ["Action", "Comedy", "Drama", "Romance", "Thriller"]
 
 st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
