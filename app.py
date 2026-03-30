@@ -11,6 +11,14 @@ st.set_page_config(
     page_icon="🎬",
     layout="wide"
 )
+st.sidebar.title("🎬 Cinelytix")
+
+page = st.sidebar.radio(
+    "Navigate",
+    ["Home", "Search", "Compare", "Sentiment", "Watchlist"]
+)
+
+st.session_state.page = page
 
 OMDB_KEY = "c1c0e742"
 TMDB_KEY = "6bbbb1173187da4b61ee07dd092ee315"
@@ -822,9 +830,10 @@ if selected_genre:
                 st.image(poster, use_container_width=True)
 
             if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
-                r = get_movie_data(movie["title"])
-                st.session_state.search_data = r
-                st.rerun()
+               r = get_movie_data(movie["title"])
+               st.session_state.search_data = r
+               st.session_state.page = "Home"   # 👈 THIS LINE
+               st.rerun()
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
@@ -848,26 +857,6 @@ def smart_search(query):
 
 
 
-# 🔥 SEARCH TRIGGER (ENTER + BUTTON)
-if search_clicked or st.session_state.get("last_query") != q:
-    if q.strip():
-        st.session_state.last_query = q
-
-        corrected = smart_search(q)
-
-        # Optional: show correction
-        if corrected.lower() != q.lower():
-            st.info(f"Showing results for '{corrected}'")
-
-        with st.spinner(f"Searching for '{corrected}'..."):
-            r = get_movie_data(corrected)
-
-        if r:
-            if corrected not in st.session_state.history:
-                st.session_state.history.append(corrected)
-            show_result(r, "search")
-        else:
-            st.error(f"Could not find '{q}'.")
 
     st.markdown("<div class='section-title'>Try These Films</div>",
                 unsafe_allow_html=True)
