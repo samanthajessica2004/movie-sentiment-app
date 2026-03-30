@@ -842,12 +842,12 @@ if selected_genre:
             if poster:
                 st.image(poster, use_container_width=True)
 
-           if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
+            if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
                 st.session_state.search_data = get_movie_data(movie["title"])
                 st.session_state.scroll_trigger = True
                 st.rerun()
 
-          if st.session_state.get("scroll_trigger"):
+            if st.session_state.get("scroll_trigger"):
             st.success("Showing results ↑")
             st.session_state.scroll_trigger = False
 # ══════════════════════════════════════════════════════════════════════
