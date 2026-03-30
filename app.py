@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 OMDB_KEY = "c1c0e742"
-
+TMDB_KEY = "6bbbb1173187da4b61ee07dd092ee315"
 
 
 st.markdown("""
@@ -437,6 +437,19 @@ def fetch_movie(title):
     except:
         pass
     return None
+    
+@st.cache_data(ttl=3600)
+def get_trending_movies():
+    url = f"https://api.themoviedb.org/3/trending/movie/week?api_key={TMDB_KEY}"
+    data = requests.get(url).json()
+    return data.get("results", [])
+
+@st.cache_data(ttl=3600)
+def get_movies_by_genre(genre_name):
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&query={genre_name}"
+    data = requests.get(url).json()
+    return data.get("results", [])
+
 
 def calculate_score(movie_data):
     scores = []
@@ -714,12 +727,23 @@ if st.session_state.page == "Home":
 # Popular around the world
 st.markdown("<div class='section-title' style='margin-top:1.5rem;'>Popular Around the World</div>", unsafe_allow_html=True)
 st.markdown("<div class='section-sub'>Click any film to get its sentiment score instantly</div>", unsafe_allow_html=True)
+movies = get_trending_movies()
 
-popular = [
-        "RRR",       "Parasite",    "Spirited Away",  "Amelie",
-        "3 Idiots",  "City of God", "Inception",      "Dangal",
-        "Oldboy",    "Intouchables","A Separation",   "Life Is Beautiful",
-    ]
+cols = st.columns(4)
+
+for i, movie in enumerate(movies[:12]):
+    with cols[i % 4]:
+        poster = f"https://image.tmdb.org/t/p/w500{movie['poster_path']}" if movie.get("poster_path") else None
+        
+        if poster:
+            st.image(poster, use_container_width=True)
+
+        if st.button(movie["title"], key=f"trend_{i}", use_container_width=True):
+            r = get_movie_data(movie["title"])
+            st.session_state.search_data = r
+            if movie["title"] not in st.session_state.history:
+                st.session_state.history.append(movie["title"])
+            st.rerun()
 cols = st.columns(4)
 for i, t in enumerate(popular):
     if cols[i % 4].button(t, key=f"p{i}", use_container_width=True):
@@ -730,84 +754,52 @@ for i, t in enumerate(popular):
                 st.session_state.history.append(t)
          st.rerun()
 
-# 🔹 Genre → search mapping
-GENRE_MAP = {
-    "Action": "action",
-    "Comedy": "comedy",
-    "Drama": "drama",
-    "Romance": "romance",
-    "Thriller": "thriller"
-}
+GENRES = ["Action", "Comedy", "Drama", "Romance", "Thriller"]
 
-# 🔹 Bollywood movies
-BOLLYWOOD_MOVIES = {
-    "Action": ["Pathaan", "War", "KGF", "Baaghi"],
-    "Comedy": ["3 Idiots", "Hera Pheri", "Golmaal"],
-    "Drama": ["Dangal", "Taare Zameen Par"],
-    "Romance": ["DDLJ", "Kabir Singh", "Jab We Met"],
-    "Thriller": ["Andhadhun", "Drishyam"]
-}
+st.markdown("<div class='section-title'>Browse by Genre</div>", unsafe_allow_html=True)
 
-# 🔹 Fetch movie details (poster etc.)
-def fetch_movie(title):
-    try:
-        url = f"https://www.omdbapi.com/?t={title}&apikey={OMDB_KEY}"
-        res = requests.get(url).json()
+gcols = st.columns(len(GENRES))
 
-        if res.get("Response") == "True":
-            return res
-    except:
-        pass
-    return None
+for i, g in enumerate(GENRES):
+    if gcols[i].button(g, key=f"g_{g}", use_container_width=True):
+        st.session_state.selected_genre = g
+        st.rerun()
 
 
-# 🔹 Get selected genre
 selected_genre = st.session_state.get("selected_genre")
 
 if selected_genre:
-    st.write(f"### 🎬 {selected_genre} Movies")
+    st.markdown(f"### 🎬 {selected_genre} Movies")
 
     movies = []
 
-    # ✅ Add Bollywood movies
+    # ✅ Bollywood
     if selected_genre in BOLLYWOOD_MOVIES:
         movies.extend(BOLLYWOOD_MOVIES[selected_genre])
 
-    # ✅ Add OMDb movies
-    search_term = GENRE_MAP.get(selected_genre, selected_genre)
+    # ✅ TMDb (LIVE)
+    tmdb_movies = get_movies_by_genre(selected_genre)
 
-    try:
-        url = f"https://www.omdbapi.com/?s={search_term}&apikey={OMDB_KEY}"
-        data = requests.get(url).json()
+    movies.extend([m["title"] for m in tmdb_movies if m.get("title")])
 
-        if data.get("Search"):
-            movies.extend([m["Title"] for m in data["Search"]])
-    except:
-        st.warning("Could not fetch movies")
-
-    # ✅ Remove duplicates
+    # remove duplicates
     movies = list(set(movies))
 
-    # ✅ If no movies found
-    if not movies:
-        st.info("No movies found")
-    else:
-        # ✅ Horizontal layout (5 per row)
-        for i in range(0, min(len(movies), 10), 5):
-            cols = st.columns(5)
+    # display horizontally
+    for i in range(0, min(len(movies), 10), 5):
+        cols = st.columns(5)
 
-            for j in range(5):
-                if i + j < len(movies):
-                    title = movies[i + j]
-                    movie_data = fetch_movie(title)
+        for j in range(5):
+            if i + j < len(movies):
+                title = movies[i + j]
+                movie_data = get_movie_data(title)
 
-                    with cols[j]:
-                        if movie_data:
-                            poster = movie_data["Poster"] if movie_data["Poster"] != "N/A" else "https://via.placeholder.com/150"
-                            st.image(poster, use_container_width=True)
-                            st.caption(movie_data["Title"])
-                        else:
-                            st.write(title)
+                with cols[j]:
+                    if movie_data and movie_data["poster"] != "N/A":
+                        st.image(movie_data["poster"], use_container_width=True)
+                        st.caption(movie_data["title"])
+                    else:
+                        st.write(title)
 
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
