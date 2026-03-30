@@ -860,7 +860,7 @@ if selected_genre:
                else:
                   st.error("Movie data not found")    
 
- elif st.session_state.page == "Search":           
+elif st.session_state.page == "Search":           
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
