@@ -658,6 +658,10 @@ with st.sidebar:
 # ══════════════════════════════════════════════════════════════════════
 # HOME
 # ══════════════════════════════════════════════════════════════════════
+# 🔝 SHOW RESULT FIRST (acts like scroll-to-top)
+if st.session_state.get("search_data"):
+    show_result(st.session_state.search_data, "home")
+    
 if st.session_state.page == "Home":
 
     # Hero banner
@@ -838,11 +842,14 @@ if selected_genre:
             if poster:
                 st.image(poster, use_container_width=True)
 
-            if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
-               r = get_movie_data(movie["title"])
-               st.session_state.search_data = r
-               st.session_state.page = "Home"   # 👈 THIS LINE
-               st.rerun()
+           if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
+                st.session_state.search_data = get_movie_data(movie["title"])
+                st.session_state.scroll_trigger = True
+                st.rerun()
+
+          if st.session_state.get("scroll_trigger"):
+            st.success("Showing results ↑")
+            st.session_state.scroll_trigger = False
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
