@@ -474,6 +474,15 @@ def calculate_score(movie_data):
             except: pass
     return round(sum(scores)/len(scores)) if scores else 70
 
+def smart_search(query):
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&query={query}"
+    data = requests.get(url).json()
+
+    if data.get("results"):
+        return data["results"][0]["title"]  # best match
+    
+    return query
+
 @st.cache_data(ttl=3600)
 def get_movie_data(title):
     movie = fetch_movie(title)
@@ -844,14 +853,7 @@ if st.session_state.page == "Search":
     st.markdown("<div class='page-sub'>Find any film from any country — scores from IMDB, Rotten Tomatoes and Metacritic</div>", unsafe_allow_html=True)
 
    # 🔍 Smart search function (ADD THIS ABOVE SEARCH SECTION if not added)
-def smart_search(query):
-    url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&query={query}"
-    data = requests.get(url).json()
 
-    if data.get("results"):
-        return data["results"][0]["title"]  # best match
-    
-    return query
 
 
 
