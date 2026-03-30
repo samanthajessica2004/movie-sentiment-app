@@ -834,21 +834,52 @@ if st.session_state.page == "Search":
                 unsafe_allow_html=True)
     st.markdown("<div class='page-sub'>Find any film from any country — scores from IMDB, Rotten Tomatoes and Metacritic</div>", unsafe_allow_html=True)
 
-    col_s, col_b = st.columns([4, 1])
-    with col_s:
-        q = st.text_input("", placeholder="Type any movie title...",
-                          label_visibility="collapsed", key="sq")
-    with col_b:
-        if st.button("Analyze", use_container_width=True, key="sbtn"):
-            if q.strip():
-                with st.spinner(f"Finding '{q}'..."):
-                    r = get_movie_data(q)
-                if r:
-                    if q not in st.session_state.history:
-                        st.session_state.history.append(q)
-                    show_result(r, "search")
-                else:
-                    st.error(f"Could not find '{q}'.")
+   # 🔍 Smart search function (ADD THIS ABOVE SEARCH SECTION if not added)
+def smart_search(query):
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_KEY}&query={query}"
+    data = requests.get(url).json()
+
+    if data.get("results"):
+        return data["results"][0]["title"]  # best match
+    
+    return query
+
+
+# 🔍 SEARCH UI
+col_s, col_b = st.columns([4, 1])
+
+with col_s:
+    q = st.text_input(
+        "",
+        placeholder="Type any movie title...",
+        label_visibility="collapsed",
+        key="sq"
+    )
+
+with col_b:
+    search_clicked = st.button("Analyze", use_container_width=True, key="sbtn")
+
+
+# 🔥 SEARCH TRIGGER (ENTER + BUTTON)
+if search_clicked or st.session_state.get("last_query") != q:
+    if q.strip():
+        st.session_state.last_query = q
+
+        corrected = smart_search(q)
+
+        # Optional: show correction
+        if corrected.lower() != q.lower():
+            st.info(f"Showing results for '{corrected}'")
+
+        with st.spinner(f"Searching for '{corrected}'..."):
+            r = get_movie_data(corrected)
+
+        if r:
+            if corrected not in st.session_state.history:
+                st.session_state.history.append(corrected)
+            show_result(r, "search")
+        else:
+            st.error(f"Could not find '{q}'.")
 
     st.markdown("<div class='section-title'>Try These Films</div>",
                 unsafe_allow_html=True)
