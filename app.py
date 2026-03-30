@@ -744,15 +744,7 @@ for i, movie in enumerate(movies[:12]):
             if movie["title"] not in st.session_state.history:
                 st.session_state.history.append(movie["title"])
             st.rerun()
-cols = st.columns(4)
-for i, t in enumerate(popular):
-    if cols[i % 4].button(t, key=f"p{i}", use_container_width=True):
-         with st.spinner(f"Loading {t}..."):
-                r = get_movie_data(t)
-         st.session_state.search_data = r
-         if t not in st.session_state.history:
-                st.session_state.history.append(t)
-         st.rerun()
+
 
 GENRES = ["Action", "Comedy", "Drama", "Romance", "Thriller"]
 
@@ -765,42 +757,45 @@ for i, g in enumerate(GENRES):
         st.session_state.selected_genre = g
         st.rerun()
 
-
 selected_genre = st.session_state.get("selected_genre")
 
 if selected_genre:
     st.markdown(f"### 🎬 {selected_genre} Movies")
 
-    movies = []
-
-    # ✅ Bollywood
-    if selected_genre in BOLLYWOOD_MOVIES:
-        movies.extend(BOLLYWOOD_MOVIES[selected_genre])
-
-    # ✅ TMDb (LIVE)
+    # ✅ Get LIVE movies from TMDb
     tmdb_movies = get_movies_by_genre(selected_genre)
 
-    movies.extend([m["title"] for m in tmdb_movies if m.get("title")])
+    # ✅ Add Bollywood manually
+    bollywood = BOLLYWOOD_MOVIES.get(selected_genre, [])
 
-    # remove duplicates
-    movies = list(set(movies))
+    # Combine
+    all_movies = tmdb_movies[:10]
 
-    # display horizontally
-    for i in range(0, min(len(movies), 10), 5):
-        cols = st.columns(5)
+    # Add Bollywood as fake TMDb-style dict
+    for b in bollywood:
+        all_movies.append({
+            "title": b,
+            "poster_path": None
+        })
 
-        for j in range(5):
-            if i + j < len(movies):
-                title = movies[i + j]
-                movie_data = get_movie_data(title)
+    # ✅ Horizontal layout
+    cols = st.columns(5)
 
-                with cols[j]:
-                    if movie_data and movie_data["poster"] != "N/A":
-                        st.image(movie_data["poster"], use_container_width=True)
-                        st.caption(movie_data["title"])
-                    else:
-                        st.write(title)
+    for i, movie in enumerate(all_movies[:10]):
+        with cols[i % 5]:
+            poster = (
+                f"https://image.tmdb.org/t/p/w500{movie['poster_path']}"
+                if movie.get("poster_path")
+                else None
+            )
 
+            if poster:
+                st.image(poster, use_container_width=True)
+
+            if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
+                r = get_movie_data(movie["title"])
+                st.session_state.search_data = r
+                st.rerun()
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
