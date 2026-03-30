@@ -864,7 +864,7 @@ elif st.session_state.page == "Search":
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
-if st.session_state.page == "Search":
+
 
     st.markdown("<div class='page-header'>Search Any Movie</div>",
                 unsafe_allow_html=True)
