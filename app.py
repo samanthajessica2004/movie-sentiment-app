@@ -738,8 +738,7 @@ if st.session_state.page == "Home":
                 if not r:
                     st.error(f"Could not find '{home_q}'.")
 
-    if st.session_state.search_data:
-        show_result(st.session_state.search_data, "home")
+
 
 
 
