@@ -845,19 +845,7 @@ def smart_search(query):
     return query
 
 
-# 🔍 SEARCH UI
-col_s, col_b = st.columns([4, 1])
 
-with col_s:
-    q = st.text_input(
-        "",
-        placeholder="Type any movie title...",
-        label_visibility="collapsed",
-        key="sq"
-    )
-
-with col_b:
-    search_clicked = st.button("Analyze", use_container_width=True, key="sbtn")
 
 
 # 🔥 SEARCH TRIGGER (ENTER + BUTTON)
