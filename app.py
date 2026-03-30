@@ -848,8 +848,8 @@ if selected_genre:
                 st.rerun()
 
             if st.session_state.get("scroll_trigger"):
-            st.success("Showing results ↑")
-            st.session_state.scroll_trigger = False
+               st.success("Showing results ↑")
+               st.session_state.scroll_trigger = False
 # ══════════════════════════════════════════════════════════════════════
 # SEARCH
 # ══════════════════════════════════════════════════════════════════════
