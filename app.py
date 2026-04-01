@@ -6,6 +6,21 @@ import hashlib
 import csv
 import io
 
+
+# Scroll trigger
+if "scroll_to_top" not in st.session_state:
+    st.session_state.scroll_to_top = False
+
+if st.session_state.scroll_to_top:
+    st.markdown(
+        """
+        <script>
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+    st.session_state.scroll_to_top = False
 st.set_page_config(
     page_title="Cinelytix",
     page_icon="🎬",
