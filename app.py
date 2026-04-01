@@ -771,7 +771,7 @@ if st.session_state.page == "Home":
         if poster:
             st.image(poster, use_container_width=True)
 
-       if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
+        if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
           r = get_movie_data(movie["title"])
           st.session_state.search_data = r
           st.session_state.scroll_to_result = True
