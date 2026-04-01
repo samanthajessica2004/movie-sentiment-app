@@ -769,22 +769,25 @@ if st.session_state.page == "Home":
                 if not r:
                     st.error(f"Could not find '{home_q}'.")
                     
-st.markdown("<div id='result_section'></div>", unsafe_allow_html=True)
+# Anchor (place BEFORE results)
+st.markdown('<div id="result_section"></div>', unsafe_allow_html=True)
+
+# Show result ONLY ONCE
 if st.session_state.search_data:
     show_result(st.session_state.search_data, "home")
 
-    if st.session_state.get("scroll_to_result"):
-        st.markdown("""<script>st.markdown("""<div id="result_section"></div>""", unsafe_allow_html=True)
+# Scroll trigger (separate block)
+if st.session_state.get("scroll_to_result"):
+    st.markdown("""
+        <script>
+        const el = document.getElementById("result_section");
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+        }
+        </script>
+    """, unsafe_allow_html=True)
 
-        if st.session_state.search_data:
-            show_result(st.session_state.search_data, "home")
-            if (el) el.scrollIntoView({behavior: "smooth"});
-        </script>""", unsafe_allow_html=True)
-
-        st.session_state.scroll_to_result = False
-
-
-
+    st.session_state.scroll_to_result = False
 
     
 # Popular around the world
