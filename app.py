@@ -784,7 +784,7 @@ if st.session_state.page == "Home":
         if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
           r = get_movie_data(movie["title"])
           st.session_state.search_data = r
-          st.session_state.scroll_to_result = True
+          st.session_state.scroll_to_top = True
           st.rerun()
 
 GENRE_MAP = {
