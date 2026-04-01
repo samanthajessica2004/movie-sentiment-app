@@ -774,10 +774,9 @@ if st.session_state.search_data:
     show_result(st.session_state.search_data, "home")
 
     if st.session_state.get("scroll_to_result"):
-        st.markdown("""<script>
-            st.markdown("""<div id="result_section"></div>""", unsafe_allow_html=True)
+        st.markdown("""<script>st.markdown("""<div id="result_section"></div>""", unsafe_allow_html=True)
 
-    if st.session_state.search_data:
+        if st.session_state.search_data:
             show_result(st.session_state.search_data, "home")
             if (el) el.scrollIntoView({behavior: "smooth"});
         </script>""", unsafe_allow_html=True)
