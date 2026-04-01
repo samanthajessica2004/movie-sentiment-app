@@ -430,21 +430,16 @@ classifier = load_model()
 @st.cache_data(ttl=3600)
 def fetch_movie(title):
     try:
-        url = f"https://www.omdbapi.com/?t={requests.utils.quote(title)}&apikey={OMDB_KEY}"
-        r   = requests.get(url, timeout=10)
-        d   = r.json()
-        if d.get("Response") == "True":
-            return d
-        url2 = f"https://www.omdbapi.com/?s={requests.utils.quote(title)}&apikey={OMDB_KEY}"
-        r2   = requests.get(url2, timeout=10)
-        d2   = r2.json()
-        if d2.get("Response") == "True":
-            fid  = d2["Search"][0]["imdbID"]
-            url3 = f"https://www.omdbapi.com/?i={fid}&apikey={OMDB_KEY}"
-            return requests.get(url3, timeout=10).json()
-    except:
-        pass
-    return None
+        url = f"https://www.omdbapi.com/?t={title}&apikey={OMDB_KEY}"
+        res = requests.get(url, timeout=5).json()
+
+        if res.get("Response") == "True":
+            return res
+        else:
+            return None
+
+    except Exception as e:
+        return None
     
 @st.cache_data(ttl=3600)
 def get_trending_movies():
