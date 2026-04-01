@@ -739,9 +739,18 @@ if st.session_state.page == "Home":
                     st.session_state.history.append(home_q)
                 if not r:
                     st.error(f"Could not find '{home_q}'.")
-
+                    
+st.markdown("<div id='result_section'></div>", unsafe_allow_html=True)
 if st.session_state.search_data:
     show_result(st.session_state.search_data, "home")
+
+    if st.session_state.get("scroll_to_result"):
+        st.markdown("""<script>
+            const el = window.parent.document.getElementById("result_section");
+            if (el) el.scrollIntoView({behavior: "smooth"});
+        </script>""", unsafe_allow_html=True)
+
+        st.session_state.scroll_to_result = False
 
 
 
@@ -762,12 +771,11 @@ if st.session_state.page == "Home":
         if poster:
             st.image(poster, use_container_width=True)
 
-        if st.button(movie["title"], key=f"trend_{i}", use_container_width=True):
-            r = get_movie_data(movie["title"])
-            st.session_state.search_data = r
-            if movie["title"] not in st.session_state.history:
-                st.session_state.history.append(movie["title"])
-            st.rerun()
+       if st.button(movie["title"], key=f"genre_{i}", use_container_width=True):
+          r = get_movie_data(movie["title"])
+          st.session_state.search_data = r
+          st.session_state.scroll_to_result = True
+          st.rerun()
 
 GENRE_MAP = {
     "Action": 28,
