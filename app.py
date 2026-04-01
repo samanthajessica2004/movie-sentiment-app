@@ -853,7 +853,7 @@ if selected_genre:
             if poster:
                 st.image(poster, use_container_width=True)
 
-            if st.button(movie["title"], key=f"genre_{i}_{movie['title']}"", use_container_width=True):
+            if st.button(movie["title"], key=f"genre_{i}_{movie['title']}", use_container_width=True):
 
                with st.spinner(f"Loading {movie['title']}..."):
                 movie_data = get_movie_data(movie["title"])
