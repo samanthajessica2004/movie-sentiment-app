@@ -712,9 +712,10 @@ if st.session_state.page == "Home":
     with col_d2:
         if st.button("Analyze Today's Film", use_container_width=True, key="daily"):
             with st.spinner(f"Loading {daily_title}..."):
-                corrected = smart_search(movie["title"])
+                corrected = smart_search(daily_title)
                 r = get_movie_data(corrected)
-                st.session_state.search_data = r
+                
+            st.session_state.search_data = r
             if daily_title not in st.session_state.history:
                 st.session_state.history.append(daily_title)
             st.rerun()
